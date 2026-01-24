@@ -8,12 +8,18 @@ import dev.amitwani.mcp_spring_java.model.JiraHistory;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import jakarta.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,130 +28,210 @@ public class UserService {
 
   private final List<CommitHistory> commitList = new ArrayList<>();
   private final List<JiraTicket> jiraTickets = new ArrayList<>();
+  private final WebClient githubWebClient;
+  private final WebClient jiraWebClient;
 
-  private final String[] randomCommentTexts = {
-          "Initial analysis done, starting implementation.",
-          "Facing some issues, investigating root cause.",
-          "Code review completed, waiting for merge.",
-          "Deployed to staging for testing.",
-          "Fixed the bugs reported during QA.",
-          "Performance optimized based on feedback.",
-          "Updating documentation and comments.",
-          "Pending approvals from project manager.",
-          "Final testing underway before release.",
-          "Refactoring some modules for better clarity."
-  };
+  @Value("${github.repo.owner}")
+  private String githubOwner;
+  @Value("${github.repo.name}")
+  private String githubRepo;
+  @Value("${github.token}")
+  private String githubToken;
 
-  public UserService() {
-    User user1 = new User("alice", LocalDate.of(1990, 1, 5), LocalDate.of(2020, 2, 15), "Software Engineer");
-    User user2 = new User("bob", LocalDate.of(1988, 4, 22), LocalDate.of(2019, 8, 12), "Senior Developer");
-    User user3 = new User("charlie", LocalDate.of(1992, 11, 30), LocalDate.of(2021, 1, 1), "DevOps Engineer");
-    User user4 = new User("diana", LocalDate.of(1995, 6, 18), LocalDate.of(2022, 3, 20), "QA Analyst");
-    User user5 = new User("eric", LocalDate.of(1985, 9, 9), LocalDate.of(2018, 5, 10), "Team Lead");
+  @Value("${jira.url}")
+  private String jiraUrl;
+  @Value("${jira.username}")
+  private String jiraUsername;
+  @Value("${jira.api-key}")
+  private String jiraApiKey;
 
-    List<CommitHistory> originalCommits = List.of(
-            new CommitHistory(user1, "Refactored login module", "DEV-101", LocalDateTime.of(2025, 7, 1, 10, 15)),
-            new CommitHistory(user1, "Added user profile page", "DEV-102", LocalDateTime.of(2025, 7, 2, 14, 30)),
-            new CommitHistory(user1, "Fixed null pointer in payment", "BUG-301", LocalDateTime.of(2025, 7, 3, 9, 45)),
-            new CommitHistory(user1, "Improved dashboard load time", "PERF-105", LocalDateTime.of(2025, 7, 5, 16, 10)),
-            new CommitHistory(user1, "Updated API version", "MAINT-200", LocalDateTime.of(2025, 7, 6, 11, 5)),
+  public UserService(WebClient.Builder webClientBuilder) {
+    this.githubWebClient = webClientBuilder.baseUrl("https://api.github.com").build();
+    this.jiraWebClient = webClientBuilder.build();
+  }
 
+  @PostConstruct
+  public void init() {
+    log.info("Initializing UserService. Fetching commits for {}/{}", githubOwner, githubRepo);
+    List<GitHubCommit> gitHubCommits = fetchCommits();
 
-            new CommitHistory(user2, "Implemented JWT auth", "SEC-112", LocalDateTime.of(2025, 7, 1, 11, 20)),
-            new CommitHistory(user2, "Migrated DB schema", "DB-220", LocalDateTime.of(2025, 7, 2, 15, 0)),
-            new CommitHistory(user2, "Fixed caching issue", "BUG-302", LocalDateTime.of(2025, 7, 3, 12, 25)),
-            new CommitHistory(user2, "Optimized report generator", "PERF-110", LocalDateTime.of(2025, 7, 4, 18, 40)),
-            new CommitHistory(user2, "Removed deprecated endpoints", "CLEAN-404", LocalDateTime.of(2025, 7, 5, 17, 55)),
+    if (gitHubCommits != null) {
+      log.info("Fetched {} commits from GitHub. Processing...", gitHubCommits.size());
+      processCommits(gitHubCommits);
+    } else {
+      log.warn("No commits fetched from GitHub.");
+    }
+  }
 
-            new CommitHistory(user3, "Added CI/CD pipeline", "DEVOPS-500", LocalDateTime.of(2025, 7, 1, 8, 50)),
-            new CommitHistory(user3, "Enabled blue-green deployment", "DEVOPS-501", LocalDateTime.of(2025, 7, 2, 9, 10)),
-            new CommitHistory(user3, "Dockerized payment service", "DOCKER-333", LocalDateTime.of(2025, 7, 3, 10, 20)),
-            new CommitHistory(user3, "Set up monitoring dashboard", "MON-404", LocalDateTime.of(2025, 7, 4, 13, 35)),
-            new CommitHistory(user3, "Upgraded Kubernetes version", "K8S-221", LocalDateTime.of(2025, 7, 6, 14, 15)),
+  private List<GitHubCommit> fetchCommits() {
+    try {
+      return githubWebClient.get()
+          .uri("/repos/{owner}/{repo}/commits", githubOwner, githubRepo)
+          .header("Authorization", "Bearer " + githubToken)
+          .header("Accept", "application/vnd.github+json")
+          .header("X-GitHub-Api-Version", "2022-11-28")
+          .retrieve()
+          .bodyToFlux(GitHubCommit.class)
+          .collectList()
+          .block();
+    } catch (Exception e) {
+      log.error("Error fetching commits from GitHub", e);
+      return Collections.emptyList();
+    }
+  }
 
-            new CommitHistory(user4, "Wrote test cases for login", "QA-123", LocalDateTime.of(2025, 7, 1, 16, 40)),
-            new CommitHistory(user4, "Automated regression suite", "QA-124", LocalDateTime.of(2025, 7, 2, 11, 50)),
-            new CommitHistory(user4, "Logged issue for UI misalignment", "BUG-400", LocalDateTime.of(2025, 7, 3, 9, 5)),
-            new CommitHistory(user4, "Improved test coverage to 85%", "QA-125", LocalDateTime.of(2025, 7, 4, 15, 25)),
-            new CommitHistory(user4, "Updated test data source", "QA-126", LocalDateTime.of(2025, 7, 6, 13, 10)),
+  private void processCommits(List<GitHubCommit> gitHubCommits) {
+    Map<String, User> userCache = new HashMap<>();
 
-            new CommitHistory(user5, "Reviewed PRs and merged", "MGMT-101", LocalDateTime.of(2025, 7, 1, 10, 10)),
-            new CommitHistory(user5, "Assigned tasks for sprint 45", "MGMT-102", LocalDateTime.of(2025, 7, 2, 10, 30)),
-            new CommitHistory(user5, "Fixed blocker issue", "BUG-333", LocalDateTime.of(2025, 7, 3, 14, 0)),
-            new CommitHistory(user5, "Planned feature roadmap", "PLAN-111", LocalDateTime.of(2025, 7, 5, 16, 20)),
-            new CommitHistory(user5, "Conducted code review", "REVIEW-210", LocalDateTime.of(2025, 7, 6, 12, 45))
-    );
+    for (GitHubCommit ghCommit : gitHubCommits) {
+      String authorName = ghCommit.commit.author.name;
+      User user = userCache.computeIfAbsent(authorName, name -> {
+        return new User(name,
+            LocalDate.of(1990 + ThreadLocalRandom.current().nextInt(10), 1, 1),
+            LocalDate.of(2020 + ThreadLocalRandom.current().nextInt(3), 1, 1),
+            "Developer");
+      });
 
-    int jiraCounter = 1000;
+      String message = ghCommit.commit.message;
+      String devReference = extractDevReference(message);
 
-    for (CommitHistory commit : originalCommits) {
-      // Generate Jira History with random but varied changes
-      List<JiraHistory> history = new ArrayList<>();
-      String[] fields = {"status", "effort", "priority", "assignee"};
-      String[][] values = {
-              {"To Do", "In Progress", "In Review", "Done"},
-              {"2h", "4h", "8h", "16h"},
-              {"Low", "Medium", "High", "Critical"},
-              {"alice", "bob", "charlie", "diana", "eric"}
-      };
+      log.debug("Commit: {}, Extracted Key: {}", message.replace("\n", " "), devReference);
 
-      int changesCount = ThreadLocalRandom.current().nextInt(2, 5);
-      LocalDateTime baseTime = commit.getCommitTime().minusDays(5);
+      LocalDateTime commitTime = LocalDateTime.parse(ghCommit.commit.author.date, DateTimeFormatter.ISO_DATE_TIME);
+      CommitHistory commit = new CommitHistory(user, message, devReference, commitTime);
 
-      for (int i = 0; i < changesCount; i++) {
-        int fieldIndex = i % fields.length;
-        String field = fields[fieldIndex];
-        String oldValue = values[fieldIndex][ThreadLocalRandom.current().nextInt(values[fieldIndex].length)];
-        String newValue;
-        do {
-          newValue = values[fieldIndex][ThreadLocalRandom.current().nextInt(values[fieldIndex].length)];
-        } while (newValue.equals(oldValue)); // ensure change
-
-        LocalDateTime changedAt = baseTime.plusHours(i * 12L + ThreadLocalRandom.current().nextInt(0, 6));
-        history.add(new JiraHistory(field, oldValue, newValue, changedAt));
+      JiraTicket jiraTicket = null;
+      if (devReference != null) {
+        jiraTicket = fetchJiraTicket(devReference, commitTime);
       }
 
-      // Generate random comments (2-4 per ticket)
-      int commentCount = ThreadLocalRandom.current().nextInt(2, 5);
-      List<JiraComment> comments = new ArrayList<>();
-      for (int i = 0; i < commentCount; i++) {
-        String text = randomCommentTexts[ThreadLocalRandom.current().nextInt(randomCommentTexts.length)];
-        LocalDateTime commentTime = commit.getCommitTime().minusHours(ThreadLocalRandom.current().nextInt(1, 24));
-        comments.add(new JiraComment(commit.getUser(), text, commentTime));
+      if (jiraTicket == null) {
+        log.debug("Falling back to dummy ticket for commit: {}", devReference);
+        jiraTicket = generateDummyJiraTicket(
+            devReference != null ? devReference : "JIRA-" + ThreadLocalRandom.current().nextInt(1000, 9999), commit);
+      } else {
+        log.info("Successfully fetched real Jira ticket: {}", jiraTicket.getTicketId());
       }
 
-      JiraTicket jiraTicket = new JiraTicket(
-              "JIRA-" + jiraCounter++,
-              "Task related to " + commit.getDevelopmentReference(),
-              commit.getCommitTime().minusDays(3),
-              8.0,
-              6.5,
-              history,
-              comments
-      );
-
-      // Link JiraTicket to CommitHistory
       commit.setJiraTicket(jiraTicket);
-
-      // Add to service lists
       commitList.add(commit);
       jiraTickets.add(jiraTicket);
     }
+    log.info("Loaded {} commits and tickets", commitList.size());
+  }
+
+  private String extractDevReference(String message) {
+    // Case-insensitive matching for standard Jira keys like PROJ-123
+    Pattern pattern = Pattern.compile("([A-Za-z]+-\\d+)");
+    Matcher matcher = pattern.matcher(message);
+    if (matcher.find()) {
+      return matcher.group(1).toUpperCase();
+    }
+    return null;
+  }
+
+  private JiraTicket fetchJiraTicket(String issueKey, LocalDateTime commitTime) {
+    try {
+      String plainCreds = jiraUsername + ":" + jiraApiKey;
+      String auth = Base64.getEncoder().encodeToString(plainCreds.getBytes());
+
+      String baseUrl = jiraUrl.endsWith("/") ? jiraUrl.substring(0, jiraUrl.length() - 1) : jiraUrl;
+      String fullUrl = baseUrl + "/rest/api/3/issue/" + issueKey;
+
+      log.debug("Fetching Jira ticket from: {}", fullUrl);
+
+      JiraIssue issue = jiraWebClient.get()
+          .uri(fullUrl)
+          .header("Authorization", "Basic " + auth)
+          .header("Accept", "application/json")
+          .retrieve()
+          .bodyToMono(JiraIssue.class)
+          .block();
+
+      if (issue != null && issue.fields != null) {
+        return mapToJiraTicket(issue, commitTime);
+      }
+    } catch (Exception e) {
+      log.warn("Failed to fetch Jira ticket {}: {}", issueKey, e.getMessage());
+    }
+    return null;
+  }
+
+  private JiraTicket mapToJiraTicket(JiraIssue issue, LocalDateTime commitTime) {
+    // Map basic fields
+    List<JiraHistory> history = new ArrayList<>();
+    List<JiraComment> comments = new ArrayList<>();
+
+    return new JiraTicket(
+        issue.key,
+        issue.fields.summary != null ? issue.fields.summary : "No Summary",
+        commitTime.minusDays(2),
+        8.0,
+        4.0,
+        history,
+        comments);
+  }
+
+  private JiraTicket generateDummyJiraTicket(String key, CommitHistory commit) {
+    List<JiraHistory> history = new ArrayList<>();
+    String[] fields = { "status", "effort", "priority", "assignee" };
+    String[][] values = {
+        { "To Do", "In Progress", "In Review", "Done" },
+        { "2h", "4h", "8h", "16h" },
+        { "Low", "Medium", "High", "Critical" },
+        { "alice", "bob", "charlie", "diana", "eric" }
+    };
+
+    int changesCount = ThreadLocalRandom.current().nextInt(2, 5);
+    LocalDateTime baseTime = commit.getCommitTime().minusDays(5);
+
+    for (int i = 0; i < changesCount; i++) {
+      int fieldIndex = i % fields.length;
+      String field = fields[fieldIndex];
+      String oldValue = values[fieldIndex][ThreadLocalRandom.current().nextInt(values[fieldIndex].length)];
+      String newValue;
+      do {
+        newValue = values[fieldIndex][ThreadLocalRandom.current().nextInt(values[fieldIndex].length)];
+      } while (newValue.equals(oldValue));
+
+      LocalDateTime changedAt = baseTime.plusHours(i * 12L + ThreadLocalRandom.current().nextInt(0, 6));
+      history.add(new JiraHistory(field, oldValue, newValue, changedAt));
+    }
+
+    return new JiraTicket(key, "Task related to " + key, commit.getCommitTime().minusDays(1), 8.0, 0.0, history,
+        new ArrayList<>());
+  }
+
+  // DTOs for GitHub API response
+  record GitHubCommit(CommitDetail commit) {
+  }
+
+  record CommitDetail(Author author, String message) {
+  }
+
+  record Author(String name, String date) {
+  }
+
+  // DTOs for Jira
+  record JiraIssue(String key, JiraFields fields) {
+  }
+
+  record JiraFields(String summary, String status) {
   }
 
   @Tool(name = "getUserGitCommitsByUserName", description = "Get a user's git commit history. These commits may reflect performance and stress levels.")
   public List<CommitHistory> getCommitHistoryByUser(String userName) {
     return commitList.stream()
-            .filter(commit -> commit.getUser().getUserName().equalsIgnoreCase(userName))
-            .collect(Collectors.toList());
+        .filter(commit -> commit.getUser().getUserName().equalsIgnoreCase(userName))
+        .collect(Collectors.toList());
   }
 
   @Tool(name = "getAllUsers", description = "Get the list of all users in the system.")
   public List<User> getAllUsers() {
     return commitList.stream()
-            .map(CommitHistory::getUser)
-            .distinct()
-            .collect(Collectors.toList());
+        .map(CommitHistory::getUser)
+        .distinct()
+        .collect(Collectors.toList());
   }
 
   @Tool(name = "getAllCommits", description = "Get the list of all git commits by all users.")
@@ -161,8 +247,8 @@ public class UserService {
   @Tool(name = "getJiraTicketsByUser", description = "Get Jira tickets assigned to a user based on their comments.")
   public List<JiraTicket> getJiraTicketsByUser(String userName) {
     return jiraTickets.stream()
-            .filter(ticket -> ticket.getComments().stream()
-                    .anyMatch(comment -> comment.getCommenter().getUserName().equalsIgnoreCase(userName)))
-            .collect(Collectors.toList());
+        .filter(ticket -> ticket.getComments().stream()
+            .anyMatch(comment -> comment.getCommenter().getUserName().equalsIgnoreCase(userName)))
+        .collect(Collectors.toList());
   }
 }

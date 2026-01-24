@@ -21,3 +21,14 @@ server:
 logging:
   file:
     name: ./target/starter-webmvc-server.log
+
+github:
+  repo:
+    owner: hesaru
+    name: EventMaster
+  token: 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
+
+jira:
+  url: https://hesarusenithwannigama.atlassian.net/
+  username: hesarusenithwannigama@gmail.com
+  api-key: ATATT3xFfGF0ascJGodxXcKhSD5dKUcG-7lsoXmm164dkNMiW6LokX3sxjJfJnh28lVCKcdofaw6JrndC-QvBTvzoHBqvT4jIf5K9EbWJODWDYldG5c-Vsntl_94xKe9IeU09zK9KStAZ3iwAJP6_OIBqBWpXfQo2FL7BDKy3jrO0VFqWVOp5lM=7F42BB4E
