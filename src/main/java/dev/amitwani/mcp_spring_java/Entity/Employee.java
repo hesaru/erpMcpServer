@@ -36,6 +36,11 @@ public class Employee {
     /** Atlassian Jira account ID — used to assign Jira issues to this employee. */
     private String jiraAccountId;
 
+    /**
+     * GitHub username — used to sync GitHub commits for this employee. Can be null.
+     */
+    private String githubUsername;
+
     public Long getId() {
         return id;
     }
@@ -98,5 +103,13 @@ public class Employee {
 
     public void setJiraAccountId(String jiraAccountId) {
         this.jiraAccountId = jiraAccountId;
+    }
+
+    public String getGithubUsername() {
+        return githubUsername;
+    }
+
+    public void setGithubUsername(String githubUsername) {
+        this.githubUsername = githubUsername;
     }
 }

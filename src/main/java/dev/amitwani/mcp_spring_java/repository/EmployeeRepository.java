@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
@@ -15,4 +16,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             "LOWER(e.lastName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "LOWER(e.userName) LIKE LOWER(CONCAT('%', :query, '%'))")
     List<Employee> searchEmployees(String query);
+
+    Optional<Employee> findByGithubUsername(String githubUsername);
+
+    List<Employee> findAllByGithubUsernameIsNotNull();
 }

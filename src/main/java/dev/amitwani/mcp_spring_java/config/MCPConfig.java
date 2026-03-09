@@ -1,5 +1,6 @@
 package dev.amitwani.mcp_spring_java.config;
 
+import dev.amitwani.mcp_spring_java.service.GitHubMcpTools;
 import dev.amitwani.mcp_spring_java.service.JiraMcpTools;
 import dev.amitwani.mcp_spring_java.service.UserService;
 import org.springframework.ai.tool.ToolCallbackProvider;
@@ -13,18 +14,20 @@ public class MCPConfig {
 
     private final UserService userService;
     private final JiraMcpTools jiraMcpTools;
+    private final GitHubMcpTools gitHubMcpTools;
 
     @Autowired
-    public MCPConfig(UserService userService, JiraMcpTools jiraMcpTools) {
+    public MCPConfig(UserService userService, JiraMcpTools jiraMcpTools, GitHubMcpTools gitHubMcpTools) {
         this.userService = userService;
         this.jiraMcpTools = jiraMcpTools;
+        this.gitHubMcpTools = gitHubMcpTools;
     }
 
     @Bean
     ToolCallbackProvider userTools() {
         return MethodToolCallbackProvider
                 .builder()
-                .toolObjects(userService, jiraMcpTools)
+                .toolObjects(userService, jiraMcpTools, gitHubMcpTools)
                 .build();
     }
 
