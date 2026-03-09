@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import employeeApi from '../services/employeeApi'
+import { ArrowLeft, Search, Plus, X, Trash2, User, AtSign, Briefcase, Calendar, Mail } from 'lucide-react'
 import './PageLayout.css'
-import './BacklogManagement.css' // Reusing styles or creating new ones
+import './EmployeeManagement.css'
 
 const EmployeeManagement = () => {
     const navigate = useNavigate()
@@ -91,11 +92,20 @@ const EmployeeManagement = () => {
         }
     }
 
+    const formatDate = (dateString) => {
+        if (!dateString) return '—'
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        })
+    }
+
     return (
         <div className="page-layout">
             <div className="container">
                 <button className="back-button" onClick={() => navigate('/')}>
-                    ← Back to Dashboard
+                    <ArrowLeft size={16} /> Back to Dashboard
                 </button>
 
                 <div className="page-header fade-in">
@@ -106,83 +116,83 @@ const EmployeeManagement = () => {
                     </p>
                 </div>
 
-                <div className="backlog-controls glass">
-                    <div className="controls-row">
+                {/* Controls */}
+                <div className="emp-controls">
+                    <div className="emp-search-wrapper">
+                        <Search size={16} className="emp-search-icon" />
                         <input
                             type="text"
-                            placeholder="🔍 Search employees..."
-                            className="search-input"
+                            placeholder="Search employees..."
+                            className="emp-search-input"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                        <button
-                            className="create-button"
-                            onClick={() => setShowForm(!showForm)}
-                        >
-                            {showForm ? 'Cancel' : '+ Add Employee'}
-                        </button>
                     </div>
+                    <button
+                        className={`emp-toggle-form-btn ${showForm ? 'active' : ''}`}
+                        onClick={() => setShowForm(!showForm)}
+                    >
+                        {showForm ? <><X size={16} /> Cancel</> : <><Plus size={16} /> Add Employee</>}
+                    </button>
                 </div>
 
+                {/* Add Employee Form */}
                 {showForm && (
-                    <div className="form-container glass fade-in" style={{ marginBottom: '2rem' }}>
-                        <form onSubmit={handleSubmit} className="task-form">
-                            <div className="form-row">
-                                <div className="form-group">
-                                    <label>First Name</label>
+                    <div className="emp-form-card fade-in">
+                        <h3 className="emp-form-title">New Employee</h3>
+                        <form onSubmit={handleSubmit} className="emp-form">
+                            <div className="emp-form-grid">
+                                <div className="emp-field">
+                                    <label><User size={14} /> First Name</label>
                                     <input
                                         required
                                         name="firstName"
                                         value={formData.firstName}
                                         onChange={handleInputChange}
-                                        placeholder="First Name"
+                                        placeholder="Enter first name"
                                     />
                                 </div>
-                                <div className="form-group">
-                                    <label>Last Name</label>
+                                <div className="emp-field">
+                                    <label><User size={14} /> Last Name</label>
                                     <input
                                         required
                                         name="lastName"
                                         value={formData.lastName}
                                         onChange={handleInputChange}
-                                        placeholder="Last Name"
+                                        placeholder="Enter last name"
                                     />
                                 </div>
-                            </div>
-                            <div className="form-row">
-                                <div className="form-group">
-                                    <label>Username</label>
+                                <div className="emp-field">
+                                    <label><AtSign size={14} /> Username</label>
                                     <input
                                         required
                                         name="userName"
                                         value={formData.userName}
                                         onChange={handleInputChange}
-                                        placeholder="Username"
+                                        placeholder="Enter username"
                                     />
                                 </div>
-                                <div className="form-group">
-                                    <label>Email</label>
+                                <div className="emp-field">
+                                    <label><Mail size={14} /> Email</label>
                                     <input
                                         type="email"
                                         name="email"
                                         value={formData.email}
                                         onChange={handleInputChange}
-                                        placeholder="Email"
+                                        placeholder="Enter email"
                                     />
                                 </div>
-                            </div>
-                            <div className="form-row">
-                                <div className="form-group">
-                                    <label>Position</label>
+                                <div className="emp-field">
+                                    <label><Briefcase size={14} /> Position</label>
                                     <input
                                         name="position"
                                         value={formData.position}
                                         onChange={handleInputChange}
-                                        placeholder="Position"
+                                        placeholder="Enter position"
                                     />
                                 </div>
-                                <div className="form-group">
-                                    <label>Date of Joining</label>
+                                <div className="emp-field">
+                                    <label><Calendar size={14} /> Date of Joining</label>
                                     <input
                                         type="date"
                                         name="dateOfJoining"
@@ -191,45 +201,90 @@ const EmployeeManagement = () => {
                                     />
                                 </div>
                             </div>
-                            <button type="submit" className="submit-button">Save Employee</button>
+                            <div className="emp-form-actions">
+                                <button type="button" className="emp-btn-secondary" onClick={() => setShowForm(false)}>
+                                    Cancel
+                                </button>
+                                <button type="submit" className="emp-btn-primary">
+                                    <Plus size={16} /> Save Employee
+                                </button>
+                            </div>
                         </form>
                     </div>
                 )}
 
+                {/* Employee Table */}
                 <div className="page-content">
                     {loading ? (
-                        <p>Loading...</p>
+                        <div className="loading-state">
+                            <div className="spinner"></div>
+                            <p>Loading employees...</p>
+                        </div>
+                    ) : error ? (
+                        <div className="error-state">
+                            <div className="error-icon">⚠️</div>
+                            <h3>Error</h3>
+                            <p>{error}</p>
+                            <button className="retry-button" onClick={fetchEmployees}>Retry</button>
+                        </div>
                     ) : (
-                        <div className="glass" style={{ padding: '1rem' }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse', color: 'white' }}>
+                        <div className="emp-table-wrapper">
+                            <div className="emp-table-header">
+                                <span className="emp-count">{employees.length} employees</span>
+                            </div>
+                            <table className="emp-table">
                                 <thead>
-                                    <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', textAlign: 'left' }}>
-                                        <th style={{ padding: '1rem' }}>Name</th>
-                                        <th style={{ padding: '1rem' }}>Username</th>
-                                        <th style={{ padding: '1rem' }}>Position</th>
-                                        <th style={{ padding: '1rem' }}>Actions</th>
+                                    <tr>
+                                        <th>Employee</th>
+                                        <th>Username</th>
+                                        <th>Position</th>
+                                        <th>Email</th>
+                                        <th>Joined</th>
+                                        <th className="emp-th-actions">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {employees.map(employee => (
-                                        <tr key={employee.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                            <td style={{ padding: '1rem' }}>{employee.firstName} {employee.lastName}</td>
-                                            <td style={{ padding: '1rem' }}>@{employee.userName}</td>
-                                            <td style={{ padding: '1rem' }}>{employee.position}</td>
-                                            <td style={{ padding: '1rem' }}>
+                                        <tr key={employee.id}>
+                                            <td>
+                                                <div className="emp-name-cell">
+                                                    <div className="emp-avatar">
+                                                        {employee.firstName?.charAt(0)}{employee.lastName?.charAt(0)}
+                                                    </div>
+                                                    <span className="emp-fullname">{employee.firstName} {employee.lastName}</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span className="emp-username">@{employee.userName}</span>
+                                            </td>
+                                            <td>
+                                                <span className="emp-position">{employee.position || '—'}</span>
+                                            </td>
+                                            <td>
+                                                <span className="emp-email">{employee.email || '—'}</span>
+                                            </td>
+                                            <td>
+                                                <span className="emp-date">{formatDate(employee.dateOfJoining)}</span>
+                                            </td>
+                                            <td className="emp-td-actions">
                                                 <button
                                                     onClick={() => handleDelete(employee.id)}
-                                                    className="action-btn delete-btn"
-                                                    title="Delete"
+                                                    className="emp-delete-btn"
+                                                    title="Delete employee"
                                                 >
-                                                    🗑️
+                                                    <Trash2 size={15} />
                                                 </button>
                                             </td>
                                         </tr>
                                     ))}
                                     {employees.length === 0 && (
                                         <tr>
-                                            <td colSpan="4" style={{ padding: '2rem', textAlign: 'center' }}>No employees found</td>
+                                            <td colSpan="6" className="emp-empty-row">
+                                                <div className="emp-empty-content">
+                                                    <Users size={32} />
+                                                    <p>No employees found</p>
+                                                </div>
+                                            </td>
                                         </tr>
                                     )}
                                 </tbody>

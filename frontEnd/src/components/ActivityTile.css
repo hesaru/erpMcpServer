@@ -1,13 +1,17 @@
+/* ═══════════════════════════════════════════════
+   ACTIVITY TILE COMPONENT
+   ═══════════════════════════════════════════════ */
+
 .activity-tile {
     position: relative;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-xl);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
     cursor: pointer;
     overflow: hidden;
     transition: all var(--transition-normal);
-    min-height: 250px;
+    min-height: 220px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -15,46 +19,28 @@
 }
 
 .activity-tile:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-lg);
-    border-color: #d1d5db;
-    /* Slightly darker border on hover */
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl), var(--shadow-purple-glow);
+    border-color: var(--purple-200);
 }
 
-/* Optional: Add a subtle gradient overlay on hover */
-.activity-tile::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(to bottom right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5));
-    opacity: 0;
-    transition: opacity var(--transition-normal);
-    z-index: 0;
-    pointer-events: none;
-}
-
-.activity-tile:hover::before {
-    opacity: 1;
-}
-
+/* ─── Top accent bar ─── */
 .tile-gradient {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
-    opacity: 0.8;
+    height: 3px;
+    opacity: 0.85;
     transition: all var(--transition-normal);
 }
 
 .activity-tile:hover .tile-gradient {
-    height: 6px;
+    height: 4px;
     opacity: 1;
 }
 
+/* ─── Content ─── */
 .tile-content {
     position: relative;
     z-index: 1;
@@ -64,70 +50,80 @@
 }
 
 .tile-icon {
-    margin-bottom: var(--spacing-md);
-    transition: transform var(--transition-normal);
+    margin-bottom: var(--space-5);
+    transition: all var(--transition-normal);
     display: inline-flex;
-    color: var(--text-primary);
-    /* Default color, can be overridden */
+    color: var(--purple-600);
+    background: var(--purple-50);
+    width: 56px;
+    height: 56px;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
 }
 
-/* Make the icon take the color of the gradient if possible, or just keep it text-primary. 
-   Actually, let's make it inherit the gradient via background-clip if we want to get fancy, 
-   but for SVGs it's harder. Let's just keep it simple or use a specific color class.
-   The previous design used emojis which have their own color.
-   Let's create a specialized class or just let it be dark gray.
-   A nice touch is to color the icon with the primary color or the gradient's main color.
-   Since we don't pass the color explicitly to the icon wrapper (only the gradient string),
-   we'll stick to a clean dark icon or a specific accent.
-*/
-
-
 .activity-tile:hover .tile-icon {
-    transform: scale(1.1);
-    color: #4f46e5;
-    /* Primary blue on hover */
+    transform: scale(1.08);
+    background: var(--purple-100);
+    color: var(--purple-700);
+    box-shadow: var(--shadow-purple);
 }
 
 .tile-title {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: var(--space-2);
     transition: color var(--transition-normal);
+    letter-spacing: -0.02em;
 }
 
 .activity-tile:hover .tile-title {
-    color: #4f46e5;
-    /* Primary blue on hover */
+    color: var(--purple-700);
 }
 
 .tile-description {
     color: var(--text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin-bottom: var(--spacing-md);
+    font-size: 0.875rem;
+    line-height: 1.65;
+    margin-bottom: var(--space-5);
     flex-grow: 1;
 }
 
 .tile-arrow {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     color: var(--text-muted);
     align-self: flex-end;
     transition: all var(--transition-normal);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    background: var(--gray-50);
 }
 
 .activity-tile:hover .tile-arrow {
-    color: #4f46e5;
-    transform: translateX(5px);
+    color: var(--text-on-primary);
+    background: var(--primary-gradient);
+    transform: translateX(3px);
+    box-shadow: var(--shadow-purple);
 }
 
+/* ═══ Responsive ═══ */
 @media (max-width: 768px) {
     .activity-tile {
-        min-height: 200px;
-        padding: var(--spacing-lg);
+        min-height: 180px;
+        padding: var(--space-6);
     }
 
     .tile-title {
-        font-size: 1.25rem;
+        font-size: 1.125rem;
+    }
+
+    .tile-icon {
+        width: 48px;
+        height: 48px;
     }
 }

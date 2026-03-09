@@ -1,3 +1,5 @@
+import { getAuthHeaders } from './authApi';
+
 const API_BASE_URL = 'http://localhost:8090/api';
 
 /**
@@ -16,6 +18,7 @@ const backlogApi = {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    ...getAuthHeaders(),
                 },
                 body: JSON.stringify(taskData),
             });
@@ -48,7 +51,9 @@ const backlogApi = {
             const queryString = queryParams.toString();
             const url = queryString ? `${API_BASE_URL}/backlog-tasks?${queryString}` : `${API_BASE_URL}/backlog-tasks`;
 
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                headers: { ...getAuthHeaders() },
+            });
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -68,7 +73,9 @@ const backlogApi = {
      */
     getTasksByStatus: async (status) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/backlog-tasks?status=${status}`);
+            const response = await fetch(`${API_BASE_URL}/backlog-tasks?status=${status}`, {
+                headers: { ...getAuthHeaders() },
+            });
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -83,12 +90,14 @@ const backlogApi = {
 
     /**
      * Get tasks by assignee
-     * @param {string} assignee - Assignee name
+     * @param {string} assigneeId - Assignee ID
      * @returns {Promise<Array>} Array of tasks
      */
     getTasksByAssignee: async (assigneeId) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/backlog-tasks?assigneeId=${assigneeId}`);
+            const response = await fetch(`${API_BASE_URL}/backlog-tasks?assigneeId=${assigneeId}`, {
+                headers: { ...getAuthHeaders() },
+            });
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -108,7 +117,9 @@ const backlogApi = {
      */
     getTaskById: async (id) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/backlog-tasks/${id}`);
+            const response = await fetch(`${API_BASE_URL}/backlog-tasks/${id}`, {
+                headers: { ...getAuthHeaders() },
+            });
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -133,6 +144,7 @@ const backlogApi = {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    ...getAuthHeaders(),
                 },
                 body: JSON.stringify(taskData),
             });
@@ -157,6 +169,7 @@ const backlogApi = {
         try {
             const response = await fetch(`${API_BASE_URL}/backlog-tasks/${id}`, {
                 method: 'DELETE',
+                headers: { ...getAuthHeaders() },
             });
 
             if (!response.ok) {

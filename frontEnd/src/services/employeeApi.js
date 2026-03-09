@@ -1,3 +1,5 @@
+import { getAuthHeaders } from './authApi';
+
 const API_BASE_URL = 'http://localhost:8090/api';
 
 /**
@@ -11,7 +13,9 @@ const employeeApi = {
      */
     getAllEmployees: async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/employees`);
+            const response = await fetch(`${API_BASE_URL}/employees`, {
+                headers: { ...getAuthHeaders() },
+            });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -33,6 +37,7 @@ const employeeApi = {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    ...getAuthHeaders(),
                 },
                 body: JSON.stringify(employeeData),
             });
@@ -57,6 +62,7 @@ const employeeApi = {
         try {
             const response = await fetch(`${API_BASE_URL}/employees/${id}`, {
                 method: 'DELETE',
+                headers: { ...getAuthHeaders() },
             });
 
             if (!response.ok) {
@@ -76,7 +82,9 @@ const employeeApi = {
      */
     searchEmployees: async (query) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/employees/search?query=${encodeURIComponent(query)}`);
+            const response = await fetch(`${API_BASE_URL}/employees/search?query=${encodeURIComponent(query)}`, {
+                headers: { ...getAuthHeaders() },
+            });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }

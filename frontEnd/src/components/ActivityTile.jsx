@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { ArrowRight } from 'lucide-react'
 import './ActivityTile.css'
 
 const ActivityTile = ({ title, description, icon, gradient, path }) => {
@@ -15,7 +16,9 @@ const ActivityTile = ({ title, description, icon, gradient, path }) => {
                 <div className="tile-icon">{icon}</div>
                 <h3 className="tile-title">{title}</h3>
                 <p className="tile-description">{description}</p>
-                <div className="tile-arrow">→</div>
+                <div className="tile-arrow">
+                    <ArrowRight size={16} />
+                </div>
             </div>
         </div>
     )

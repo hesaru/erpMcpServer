@@ -560,7 +560,7 @@ const EditBacklog = () => {
                                 {formData.assignee && (
                                     <div className="form-row">
                                         <div className="form-group full-width">
-                                            <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.95rem' }}>
+                                            <p style={{ color: 'var(--purple-700)', fontSize: '0.875rem', fontWeight: 500 }}>
                                                 ✓ Selected: {employees.find(e => e.id === formData.assignee)?.firstName} {employees.find(e => e.id === formData.assignee)?.lastName}
                                             </p>
                                         </div>

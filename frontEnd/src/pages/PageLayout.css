@@ -1,120 +1,149 @@
+/* ═══════════════════════════════════════════════
+   PAGE LAYOUT — Shared inner-page shell
+   ═══════════════════════════════════════════════ */
+
 .page-layout {
     min-height: 100vh;
-    padding: var(--spacing-xl) 0;
+    padding: var(--space-10) 0 var(--space-16);
     background:
-        radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(245, 87, 108, 0.08) 0%, transparent 50%),
-        var(--bg-primary);
+        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(147, 51, 234, 0.04) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 85% 80%, rgba(168, 85, 247, 0.03) 0%, transparent 60%),
+        var(--bg-body);
 }
 
+/* ─── Back Button ─── */
 .back-button {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
     color: var(--text-secondary);
-    padding: var(--spacing-sm) var(--spacing-lg);
-    border-radius: var(--radius-md);
-    font-size: 0.95rem;
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius-lg);
+    font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
     transition: all var(--transition-normal);
-    margin-bottom: var(--spacing-xl);
-    backdrop-filter: blur(10px);
+    margin-bottom: var(--space-8);
+    box-shadow: var(--shadow-xs);
+    letter-spacing: 0.01em;
 }
 
 .back-button:hover {
-    background: var(--bg-card-hover);
-    border-color: rgba(255, 255, 255, 0.2);
-    color: var(--text-primary);
-    transform: translateX(-4px);
+    background: var(--purple-50);
+    border-color: var(--purple-200);
+    color: var(--purple-700);
+    transform: translateX(-3px);
+    box-shadow: var(--shadow-sm);
 }
 
+/* ─── Page Header ─── */
 .page-header {
     text-align: center;
-    margin-bottom: var(--spacing-2xl);
-    padding: var(--spacing-xl) 0;
+    margin-bottom: var(--space-10);
+    padding: var(--space-8) 0 var(--space-6);
 }
 
 .page-icon {
-    font-size: 4rem;
-    margin-bottom: var(--spacing-md);
-    animation: pulse 2s ease-in-out infinite;
+    font-size: 3rem;
+    margin-bottom: var(--space-4);
+    display: inline-block;
+    background: linear-gradient(135deg, var(--purple-100), var(--purple-50));
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-purple);
 }
 
 .page-header h1 {
-    font-size: 3rem;
-    margin-bottom: var(--spacing-md);
+    font-size: 2.25rem;
+    margin-bottom: var(--space-3);
+    letter-spacing: -0.03em;
 }
 
 .page-description {
-    font-size: 1.15rem;
+    font-size: 1rem;
     color: var(--text-secondary);
-    max-width: 700px;
+    max-width: 600px;
     margin: 0 auto;
-    line-height: 1.8;
+    line-height: 1.7;
 }
 
+/* ─── Page Content ─── */
 .page-content {
-    max-width: 900px;
+    max-width: 1100px;
     margin: 0 auto;
-    padding: var(--spacing-2xl);
-    border-radius: var(--radius-xl);
+}
+
+/* ─── Placeholder Content ─── */
+.placeholder-content {
+    padding: var(--space-8);
 }
 
 .placeholder-content h2 {
     color: var(--text-primary);
-    margin-bottom: var(--spacing-lg);
-    font-size: 2rem;
+    margin-bottom: var(--space-6);
+    font-size: 1.5rem;
 }
 
 .placeholder-content p {
-    font-size: 1.1rem;
-    margin-bottom: var(--spacing-lg);
+    font-size: 1rem;
+    margin-bottom: var(--space-6);
 }
 
 .placeholder-content ul {
     list-style: none;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
 }
 
 .placeholder-content li {
-    padding: var(--spacing-md);
-    margin-bottom: var(--spacing-sm);
-    background: rgba(255, 255, 255, 0.03);
-    border-left: 3px solid;
-    border-image: var(--primary-gradient) 1;
-    border-radius: var(--radius-sm);
+    padding: var(--space-4) var(--space-5);
+    background: var(--purple-50);
+    border-left: 3px solid var(--purple-500);
+    border-radius: var(--radius-md);
     color: var(--text-secondary);
+    font-size: 0.925rem;
     transition: all var(--transition-normal);
 }
 
 .placeholder-content li:hover {
-    background: rgba(255, 255, 255, 0.06);
-    transform: translateX(8px);
+    background: var(--purple-100);
+    transform: translateX(6px);
+    color: var(--purple-800);
 }
 
+/* ═══ Responsive ═══ */
 @media (max-width: 768px) {
     .page-layout {
-        padding: var(--spacing-lg) 0;
+        padding: var(--space-6) 0 var(--space-10);
     }
 
     .page-header h1 {
-        font-size: 2rem;
+        font-size: 1.75rem;
     }
 
     .page-icon {
-        font-size: 3rem;
+        font-size: 2.25rem;
+        width: 64px;
+        height: 64px;
+        line-height: 64px;
     }
 
     .page-description {
-        font-size: 1rem;
-        padding: 0 var(--spacing-sm);
+        font-size: 0.925rem;
+        padding: 0 var(--space-4);
     }
 
     .page-content {
-        padding: var(--spacing-lg);
+        padding: var(--space-6);
     }
 
     .placeholder-content h2 {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
     }
 }

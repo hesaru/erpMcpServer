@@ -1,0 +1,404 @@
+/* ═══════════════════════════════════════════════
+   EMPLOYEE MANAGEMENT — Professional Table UI
+   ═══════════════════════════════════════════════ */
+
+/* ─── Controls Bar ─── */
+.emp-controls {
+    display: flex;
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+    align-items: center;
+    flex-wrap: wrap;
+    animation: fadeIn 0.4s var(--ease-out) both;
+}
+
+.emp-search-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 240px;
+}
+
+.emp-search-icon {
+    position: absolute;
+    left: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.emp-search-input {
+    width: 100%;
+    padding: 0.625rem 0.875rem 0.625rem 2.5rem;
+    border: 1.5px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    font-family: inherit;
+    transition: all var(--transition-normal);
+}
+
+.emp-search-input:focus {
+    outline: none;
+    border-color: var(--purple-400);
+    box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+}
+
+.emp-search-input::placeholder {
+    color: var(--text-muted);
+}
+
+.emp-toggle-form-btn {
+    padding: 0.625rem 1.25rem;
+    background: var(--primary-gradient);
+    color: var(--text-on-primary);
+    border: none;
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    font-size: 0.875rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    white-space: nowrap;
+    box-shadow: var(--shadow-purple);
+}
+
+.emp-toggle-form-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-purple-lg);
+    filter: brightness(1.05);
+}
+
+.emp-toggle-form-btn.active {
+    background: var(--gray-100);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-default);
+    box-shadow: var(--shadow-xs);
+}
+
+.emp-toggle-form-btn.active:hover {
+    background: var(--gray-200);
+    transform: none;
+    filter: none;
+}
+
+/* ─── Add Employee Form Card ─── */
+.emp-form-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    margin-bottom: var(--space-6);
+    box-shadow: var(--shadow-sm);
+}
+
+.emp-form-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-5);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.emp-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+
+.emp-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+}
+
+.emp-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.emp-field label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.emp-field input {
+    padding: 0.625rem 0.875rem;
+    border: 1.5px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    font-family: inherit;
+    transition: all var(--transition-normal);
+}
+
+.emp-field input:focus {
+    outline: none;
+    border-color: var(--purple-400);
+    box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+}
+
+.emp-field input::placeholder {
+    color: var(--text-muted);
+}
+
+.emp-form-actions {
+    display: flex;
+    gap: var(--space-3);
+    justify-content: flex-end;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-light);
+}
+
+.emp-btn-secondary {
+    padding: 0.5rem 1.25rem;
+    background: var(--gray-100);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    font-size: 0.8125rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.emp-btn-secondary:hover {
+    background: var(--gray-200);
+}
+
+.emp-btn-primary {
+    padding: 0.5rem 1.25rem;
+    background: var(--primary-gradient);
+    color: var(--text-on-primary);
+    border: none;
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    font-size: 0.8125rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    box-shadow: var(--shadow-purple);
+}
+
+.emp-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-purple-lg);
+}
+
+/* ═══════════════════════════════════════════════
+   EMPLOYEE TABLE — Premium Data Table
+   ═══════════════════════════════════════════════ */
+.emp-table-wrapper {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    animation: fadeIn 0.4s var(--ease-out) both;
+}
+
+.emp-table-header {
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.emp-count {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.emp-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.emp-table thead th {
+    padding: var(--space-3) var(--space-5);
+    text-align: left;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--border-default);
+    white-space: nowrap;
+}
+
+.emp-th-actions {
+    text-align: center !important;
+    width: 80px;
+}
+
+.emp-table tbody tr {
+    transition: background var(--transition-fast);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.emp-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.emp-table tbody tr:hover {
+    background: var(--purple-50);
+}
+
+.emp-table tbody td {
+    padding: var(--space-3) var(--space-5);
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    vertical-align: middle;
+}
+
+/* ─── Name Cell with Avatar ─── */
+.emp-name-cell {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.emp-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    background: var(--primary-gradient);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-purple);
+}
+
+.emp-fullname {
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+
+.emp-username {
+    color: var(--purple-600);
+    font-weight: 500;
+    font-size: 0.8125rem;
+}
+
+.emp-position {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.emp-email {
+    color: var(--text-secondary);
+    font-size: 0.8125rem;
+}
+
+.emp-date {
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+}
+
+/* ─── Actions ─── */
+.emp-td-actions {
+    text-align: center;
+}
+
+.emp-delete-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    padding: var(--space-2);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+}
+
+.emp-delete-btn:hover {
+    color: var(--danger);
+    background: var(--danger-light);
+    border-color: rgba(239, 68, 68, 0.15);
+}
+
+/* ─── Empty State ─── */
+.emp-empty-row {
+    padding: var(--space-16) var(--space-8) !important;
+}
+
+.emp-empty-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--text-muted);
+}
+
+.emp-empty-content p {
+    margin: 0;
+    font-size: 0.925rem;
+}
+
+/* ═══ Responsive ═══ */
+@media (max-width: 920px) {
+    .emp-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .emp-table {
+        min-width: 700px;
+    }
+}
+
+@media (max-width: 768px) {
+    .emp-controls {
+        flex-direction: column;
+    }
+
+    .emp-search-wrapper {
+        width: 100%;
+    }
+
+    .emp-toggle-form-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .emp-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .emp-form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .emp-btn-secondary,
+    .emp-btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+}

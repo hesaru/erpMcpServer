@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import backlogApi from '../services/backlogApi'
+import { ArrowLeft, Search, Plus, Pencil, Trash2, BarChart3, User, Calendar, Tag } from 'lucide-react'
 import './PageLayout.css'
 import './BacklogManagement.css'
 
@@ -42,7 +43,6 @@ const BacklogManagement = () => {
         try {
             setLoading(true)
             setError(null)
-            // Pass current filters to the API
             const filters = {
                 status: filterStatus === 'ALL' ? null : filterStatus,
                 assigneeId: filterAssignee || null
@@ -59,15 +59,12 @@ const BacklogManagement = () => {
 
     const applySearchFilter = () => {
         let filtered = [...tasks]
-
-        // Filter by search query (title or description) - Client side only
         if (searchQuery) {
             filtered = filtered.filter(task =>
                 task.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 task.description?.toLowerCase().includes(searchQuery.toLowerCase())
             )
         }
-
         setFilteredTasks(filtered)
     }
 
@@ -75,7 +72,6 @@ const BacklogManagement = () => {
         if (!window.confirm('Are you sure you want to delete this task?')) {
             return
         }
-
         try {
             await backlogApi.deleteTask(id)
             setTasks(tasks.filter(task => task.id !== id))
@@ -122,7 +118,7 @@ const BacklogManagement = () => {
         <div className="page-layout">
             <div className="container">
                 <button className="back-button" onClick={() => navigate('/')}>
-                    ← Back to Dashboard
+                    <ArrowLeft size={16} /> Back to Dashboard
                 </button>
 
                 <div className="page-header fade-in">
@@ -133,11 +129,11 @@ const BacklogManagement = () => {
                     </p>
                 </div>
 
-                <div className="backlog-controls glass">
+                <div className="backlog-controls">
                     <div className="controls-row">
                         <input
                             type="text"
-                            placeholder="🔍 Search tasks..."
+                            placeholder="Search tasks..."
                             className="search-input"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -172,17 +168,17 @@ const BacklogManagement = () => {
                             className="create-button"
                             onClick={() => navigate('/edit-backlog')}
                         >
-                            + Create Task
+                            <Plus size={16} /> Create Task
                         </button>
                     </div>
 
                     <div className="stats-row">
                         <div className="stat-item">
-                            <span className="stat-label">Total Tasks:</span>
+                            <span className="stat-label">Total Tasks</span>
                             <span className="stat-value">{filteredTasks.length}</span>
                         </div>
                         <div className="stat-item">
-                            <span className="stat-label">Story Points:</span>
+                            <span className="stat-label">Story Points</span>
                             <span className="stat-value">
                                 {filteredTasks.reduce((sum, task) => sum + (task.storyPoints || 0), 0)}
                             </span>
@@ -192,12 +188,12 @@ const BacklogManagement = () => {
 
                 <div className="page-content">
                     {loading ? (
-                        <div className="loading-state glass">
+                        <div className="loading-state">
                             <div className="spinner"></div>
                             <p>Loading tasks...</p>
                         </div>
                     ) : error ? (
-                        <div className="error-state glass">
+                        <div className="error-state">
                             <div className="error-icon">⚠️</div>
                             <h3>Error Loading Tasks</h3>
                             <p>{error}</p>
@@ -206,7 +202,7 @@ const BacklogManagement = () => {
                             </button>
                         </div>
                     ) : filteredTasks.length === 0 ? (
-                        <div className="empty-state glass">
+                        <div className="empty-state">
                             <div className="empty-icon">📋</div>
                             <h3>No Tasks Found</h3>
                             <p>
@@ -218,13 +214,13 @@ const BacklogManagement = () => {
                                 className="create-button"
                                 onClick={() => navigate('/edit-backlog')}
                             >
-                                + Create Task
+                                <Plus size={16} /> Create Task
                             </button>
                         </div>
                     ) : (
                         <div className="tasks-grid">
                             {filteredTasks.map((task) => (
-                                <div key={task.id} className="task-card glass fade-in">
+                                <div key={task.id} className="task-card fade-in">
                                     <div className="task-header">
                                         <h3 className="task-title">{task.title}</h3>
                                         <div className="task-actions">
@@ -233,14 +229,14 @@ const BacklogManagement = () => {
                                                 onClick={() => handleEditTask(task.id)}
                                                 title="Edit task"
                                             >
-                                                ✏️
+                                                <Pencil size={14} />
                                             </button>
                                             <button
                                                 className="action-btn delete-btn"
                                                 onClick={() => handleDeleteTask(task.id)}
                                                 title="Delete task"
                                             >
-                                                🗑️
+                                                <Trash2 size={14} />
                                             </button>
                                         </div>
                                     </div>
@@ -266,23 +262,23 @@ const BacklogManagement = () => {
                                         <div className="meta-row">
                                             {task.assignee && (
                                                 <span className="meta-item">
-                                                    👤 {task.assignee.firstName} {task.assignee.lastName}
+                                                    <User size={12} /> {task.assignee.firstName} {task.assignee.lastName}
                                                 </span>
                                             )}
                                             {task.storyPoints && (
                                                 <span className="meta-item">
-                                                    📊 {task.storyPoints} pts
+                                                    <BarChart3 size={12} /> {task.storyPoints} pts
                                                 </span>
                                             )}
                                         </div>
 
                                         <div className="meta-row">
                                             <span className="meta-item date">
-                                                📅 {formatDate(task.dueDate)}
+                                                <Calendar size={12} /> {formatDate(task.dueDate)}
                                             </span>
                                             {task.source && (
                                                 <span className="meta-item source">
-                                                    {task.source}
+                                                    <Tag size={10} /> {task.source}
                                                 </span>
                                             )}
                                         </div>
