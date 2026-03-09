@@ -11,6 +11,9 @@ import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import dev.amitwani.mcp_spring_java.repository.EmployeeRepository;
+import dev.amitwani.mcp_spring_java.Entity.Employee;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -23,70 +26,81 @@ public class UserService {
   private final List<CommitHistory> commitList = new ArrayList<>();
   private final List<JiraTicket> jiraTickets = new ArrayList<>();
 
+  private final EmployeeRepository employeeRepository;
+
   private final String[] randomCommentTexts = {
-          "Initial analysis done, starting implementation.",
-          "Facing some issues, investigating root cause.",
-          "Code review completed, waiting for merge.",
-          "Deployed to staging for testing.",
-          "Fixed the bugs reported during QA.",
-          "Performance optimized based on feedback.",
-          "Updating documentation and comments.",
-          "Pending approvals from project manager.",
-          "Final testing underway before release.",
-          "Refactoring some modules for better clarity."
+      "Initial analysis done, starting implementation.",
+      "Facing some issues, investigating root cause.",
+      "Code review completed, waiting for merge.",
+      "Deployed to staging for testing.",
+      "Fixed the bugs reported during QA.",
+      "Performance optimized based on feedback.",
+      "Updating documentation and comments.",
+      "Pending approvals from project manager.",
+      "Final testing underway before release.",
+      "Refactoring some modules for better clarity."
   };
 
-  public UserService() {
-    User user1 = new User("alice", LocalDate.of(1990, 1, 5), LocalDate.of(2020, 2, 15), "Software Engineer");
-    User user2 = new User("bob", LocalDate.of(1988, 4, 22), LocalDate.of(2019, 8, 12), "Senior Developer");
-    User user3 = new User("charlie", LocalDate.of(1992, 11, 30), LocalDate.of(2021, 1, 1), "DevOps Engineer");
-    User user4 = new User("diana", LocalDate.of(1995, 6, 18), LocalDate.of(2022, 3, 20), "QA Analyst");
-    User user5 = new User("eric", LocalDate.of(1985, 9, 9), LocalDate.of(2018, 5, 10), "Team Lead");
+  @Autowired
+  public UserService(EmployeeRepository employeeRepository) {
+    this.employeeRepository = employeeRepository;
+
+    List<Employee> dbEmployees = employeeRepository.findAll();
+    String[] dbUserNames;
+    if (dbEmployees != null && !dbEmployees.isEmpty()) {
+      dbUserNames = dbEmployees.stream().map(Employee::getUserName).toArray(String[]::new);
+    } else {
+      dbUserNames = new String[] { "alice", "bob", "charlie", "diana", "eric" };
+    }
+
+    User user1 = new User(dbUserNames[0], LocalDate.of(1990, 1, 5), LocalDate.of(2020, 2, 15), "Software Engineer");
+    User user2 = new User(dbUserNames[1], LocalDate.of(1988, 4, 22), LocalDate.of(2019, 8, 12), "Senior Developer");
+    User user3 = new User(dbUserNames[2], LocalDate.of(1992, 11, 30), LocalDate.of(2021, 1, 1), "DevOps Engineer");
+    User user4 = new User(dbUserNames[3], LocalDate.of(1995, 6, 18), LocalDate.of(2022, 3, 20), "QA Analyst");
+//    User user5 = new User(dbUserNames[0] LocalDate.of(1985, 9, 9), LocalDate.of(2018, 5, 10), "Team Lead");
 
     List<CommitHistory> originalCommits = List.of(
-            new CommitHistory(user1, "Refactored login module", "DEV-101", LocalDateTime.of(2025, 7, 1, 10, 15)),
-            new CommitHistory(user1, "Added user profile page", "DEV-102", LocalDateTime.of(2025, 7, 2, 14, 30)),
-            new CommitHistory(user1, "Fixed null pointer in payment", "BUG-301", LocalDateTime.of(2025, 7, 3, 9, 45)),
-            new CommitHistory(user1, "Improved dashboard load time", "PERF-105", LocalDateTime.of(2025, 7, 5, 16, 10)),
-            new CommitHistory(user1, "Updated API version", "MAINT-200", LocalDateTime.of(2025, 7, 6, 11, 5)),
+        new CommitHistory(user1, "Refactored login module", "DEV-101", LocalDateTime.of(2025, 7, 1, 10, 15)),
+        new CommitHistory(user2, "Added user profile page", "DEV-102", LocalDateTime.of(2025, 7, 2, 14, 30)),
+        new CommitHistory(user1, "Fixed null pointer in payment", "BUG-301", LocalDateTime.of(2025, 7, 3, 9, 45)),
+        new CommitHistory(user3, "Improved dashboard load time", "PERF-105", LocalDateTime.of(2025, 7, 5, 16, 10)),
+        new CommitHistory(user4, "Updated API version", "MAINT-200", LocalDateTime.of(2025, 7, 6, 11, 5)),
 
+        new CommitHistory(user2, "Implemented JWT auth", "SEC-112", LocalDateTime.of(2025, 7, 1, 11, 20)),
+        new CommitHistory(user2, "Migrated DB schema", "DB-220", LocalDateTime.of(2025, 7, 2, 15, 0)),
+        new CommitHistory(user2, "Fixed caching issue", "BUG-302", LocalDateTime.of(2025, 7, 3, 12, 25)),
+        new CommitHistory(user2, "Optimized report generator", "PERF-110", LocalDateTime.of(2025, 7, 4, 18, 40)),
+        new CommitHistory(user2, "Removed deprecated endpoints", "CLEAN-404", LocalDateTime.of(2025, 7, 5, 17, 55)),
 
-            new CommitHistory(user2, "Implemented JWT auth", "SEC-112", LocalDateTime.of(2025, 7, 1, 11, 20)),
-            new CommitHistory(user2, "Migrated DB schema", "DB-220", LocalDateTime.of(2025, 7, 2, 15, 0)),
-            new CommitHistory(user2, "Fixed caching issue", "BUG-302", LocalDateTime.of(2025, 7, 3, 12, 25)),
-            new CommitHistory(user2, "Optimized report generator", "PERF-110", LocalDateTime.of(2025, 7, 4, 18, 40)),
-            new CommitHistory(user2, "Removed deprecated endpoints", "CLEAN-404", LocalDateTime.of(2025, 7, 5, 17, 55)),
+        new CommitHistory(user3, "Added CI/CD pipeline", "DEVOPS-500", LocalDateTime.of(2025, 7, 1, 8, 50)),
+        new CommitHistory(user3, "Enabled blue-green deployment", "DEVOPS-501", LocalDateTime.of(2025, 7, 2, 9, 10)),
+        new CommitHistory(user3, "Dockerized payment service", "DOCKER-333", LocalDateTime.of(2025, 7, 3, 10, 20)),
+        new CommitHistory(user3, "Set up monitoring dashboard", "MON-404", LocalDateTime.of(2025, 7, 4, 13, 35)),
+        new CommitHistory(user3, "Upgraded Kubernetes version", "K8S-221", LocalDateTime.of(2025, 7, 6, 14, 15)),
 
-            new CommitHistory(user3, "Added CI/CD pipeline", "DEVOPS-500", LocalDateTime.of(2025, 7, 1, 8, 50)),
-            new CommitHistory(user3, "Enabled blue-green deployment", "DEVOPS-501", LocalDateTime.of(2025, 7, 2, 9, 10)),
-            new CommitHistory(user3, "Dockerized payment service", "DOCKER-333", LocalDateTime.of(2025, 7, 3, 10, 20)),
-            new CommitHistory(user3, "Set up monitoring dashboard", "MON-404", LocalDateTime.of(2025, 7, 4, 13, 35)),
-            new CommitHistory(user3, "Upgraded Kubernetes version", "K8S-221", LocalDateTime.of(2025, 7, 6, 14, 15)),
+        new CommitHistory(user4, "Wrote test cases for login", "QA-123", LocalDateTime.of(2025, 7, 1, 16, 40)),
+        new CommitHistory(user4, "Automated regression suite", "QA-124", LocalDateTime.of(2025, 7, 2, 11, 50)),
+        new CommitHistory(user4, "Logged issue for UI misalignment", "BUG-400", LocalDateTime.of(2025, 7, 3, 9, 5)),
+        new CommitHistory(user4, "Improved test coverage to 85%", "QA-125", LocalDateTime.of(2025, 7, 4, 15, 25)),
+        new CommitHistory(user4, "Updated test data source", "QA-126", LocalDateTime.of(2025, 7, 6, 13, 10)));
 
-            new CommitHistory(user4, "Wrote test cases for login", "QA-123", LocalDateTime.of(2025, 7, 1, 16, 40)),
-            new CommitHistory(user4, "Automated regression suite", "QA-124", LocalDateTime.of(2025, 7, 2, 11, 50)),
-            new CommitHistory(user4, "Logged issue for UI misalignment", "BUG-400", LocalDateTime.of(2025, 7, 3, 9, 5)),
-            new CommitHistory(user4, "Improved test coverage to 85%", "QA-125", LocalDateTime.of(2025, 7, 4, 15, 25)),
-            new CommitHistory(user4, "Updated test data source", "QA-126", LocalDateTime.of(2025, 7, 6, 13, 10)),
-
-            new CommitHistory(user5, "Reviewed PRs and merged", "MGMT-101", LocalDateTime.of(2025, 7, 1, 10, 10)),
-            new CommitHistory(user5, "Assigned tasks for sprint 45", "MGMT-102", LocalDateTime.of(2025, 7, 2, 10, 30)),
-            new CommitHistory(user5, "Fixed blocker issue", "BUG-333", LocalDateTime.of(2025, 7, 3, 14, 0)),
-            new CommitHistory(user5, "Planned feature roadmap", "PLAN-111", LocalDateTime.of(2025, 7, 5, 16, 20)),
-            new CommitHistory(user5, "Conducted code review", "REVIEW-210", LocalDateTime.of(2025, 7, 6, 12, 45))
-    );
+//        new CommitHistory(user5, "Reviewed PRs and merged", "MGMT-101", LocalDateTime.of(2025, 7, 1, 10, 10)),
+//        new CommitHistory(user5, "Assigned tasks for sprint 45", "MGMT-102", LocalDateTime.of(2025, 7, 2, 10, 30)),
+//        new CommitHistory(user5, "Fixed blocker issue", "BUG-333", LocalDateTime.of(2025, 7, 3, 14, 0)),
+//        new CommitHistory(user5, "Planned feature roadmap", "PLAN-111", LocalDateTime.of(2025, 7, 5, 16, 20)),
+//        new CommitHistory(user5, "Conducted code review", "REVIEW-210", LocalDateTime.of(2025, 7, 6, 12, 45)));
 
     int jiraCounter = 1000;
 
     for (CommitHistory commit : originalCommits) {
       // Generate Jira History with random but varied changes
       List<JiraHistory> history = new ArrayList<>();
-      String[] fields = {"status", "effort", "priority", "assignee"};
+      String[] fields = { "status", "effort", "priority", "assignee" };
       String[][] values = {
-              {"To Do", "In Progress", "In Review", "Done"},
-              {"2h", "4h", "8h", "16h"},
-              {"Low", "Medium", "High", "Critical"},
-              {"alice", "bob", "charlie", "diana", "eric"}
+          { "To Do", "In Progress", "In Review", "Done" },
+          { "2h", "4h", "8h", "16h" },
+          { "Low", "Medium", "High", "Critical" },
+          dbUserNames
       };
 
       int changesCount = ThreadLocalRandom.current().nextInt(2, 5);
@@ -115,14 +129,13 @@ public class UserService {
       }
 
       JiraTicket jiraTicket = new JiraTicket(
-              "JIRA-" + jiraCounter++,
-              "Task related to " + commit.getDevelopmentReference(),
-              commit.getCommitTime().minusDays(3),
-              8.0,
-              6.5,
-              history,
-              comments
-      );
+          "JIRA-" + jiraCounter++,
+          "Task related to " + commit.getDevelopmentReference(),
+          commit.getCommitTime().minusDays(3),
+          8.0,
+          6.5,
+          history,
+          comments);
 
       // Link JiraTicket to CommitHistory
       commit.setJiraTicket(jiraTicket);
@@ -136,16 +149,16 @@ public class UserService {
   @Tool(name = "getUserGitCommitsByUserName", description = "Get a user's git commit history. These commits may reflect performance and stress levels.")
   public List<CommitHistory> getCommitHistoryByUser(String userName) {
     return commitList.stream()
-            .filter(commit -> commit.getUser().getUserName().equalsIgnoreCase(userName))
-            .collect(Collectors.toList());
+        .filter(commit -> commit.getUser().getUserName().equalsIgnoreCase(userName))
+        .collect(Collectors.toList());
   }
 
   @Tool(name = "getAllUsers", description = "Get the list of all users in the system.")
   public List<User> getAllUsers() {
     return commitList.stream()
-            .map(CommitHistory::getUser)
-            .distinct()
-            .collect(Collectors.toList());
+        .map(CommitHistory::getUser)
+        .distinct()
+        .collect(Collectors.toList());
   }
 
   @Tool(name = "getAllCommits", description = "Get the list of all git commits by all users.")
@@ -161,8 +174,8 @@ public class UserService {
   @Tool(name = "getJiraTicketsByUser", description = "Get Jira tickets assigned to a user based on their comments.")
   public List<JiraTicket> getJiraTicketsByUser(String userName) {
     return jiraTickets.stream()
-            .filter(ticket -> ticket.getComments().stream()
-                    .anyMatch(comment -> comment.getCommenter().getUserName().equalsIgnoreCase(userName)))
-            .collect(Collectors.toList());
+        .filter(ticket -> ticket.getComments().stream()
+            .anyMatch(comment -> comment.getCommenter().getUserName().equalsIgnoreCase(userName)))
+        .collect(Collectors.toList());
   }
 }

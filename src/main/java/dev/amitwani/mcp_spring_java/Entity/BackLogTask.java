@@ -43,6 +43,9 @@ public class BackLogTask {
 
     private String source; // JIRA / GITHUB / MANUAL
 
+    @Column(nullable = true)
+    private String jiraKey; // e.g., SCRUM-5 — linked Jira issue key
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

@@ -32,4 +32,71 @@ public class Employee {
     private String position;
 
     private LocalDate dateOfJoining;
+
+    /** Atlassian Jira account ID — used to assign Jira issues to this employee. */
+    private String jiraAccountId;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    public LocalDate getDateOfJoining() {
+        return dateOfJoining;
+    }
+
+    public void setDateOfJoining(LocalDate dateOfJoining) {
+        this.dateOfJoining = dateOfJoining;
+    }
+
+    public String getJiraAccountId() {
+        return jiraAccountId;
+    }
+
+    public void setJiraAccountId(String jiraAccountId) {
+        this.jiraAccountId = jiraAccountId;
+    }
 }

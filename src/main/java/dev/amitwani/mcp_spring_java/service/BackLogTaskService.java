@@ -7,6 +7,7 @@ import dev.amitwani.mcp_spring_java.repository.BackLogTaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,10 +22,20 @@ public class BackLogTaskService {
     @Autowired
     private BackLogTaskRepository backLogTaskRepository;
 
+    @Autowired
+    @Lazy
+    private JiraSyncService jiraSyncService;
+
     @Transactional
     public BackLogTask createTask(BackLogTask task) {
         log.info("Creating new backlog task: {}", task.getTitle());
-        return backLogTaskRepository.save(task);
+        BackLogTask saved = backLogTaskRepository.save(task);
+        // If the task has an assignee, push it to Jira immediately
+        if (saved.getAssignee() != null) {
+            log.info("Task has assignee — pushing to Jira immediately");
+            jiraSyncService.pushIssueToJira(saved);
+        }
+        return saved;
     }
 
     public List<BackLogTask> getAllTasks() {

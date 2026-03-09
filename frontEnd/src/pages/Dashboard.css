@@ -1,0 +1,61 @@
+.dashboard {
+    min-height: 100vh;
+    padding: var(--spacing-xl) 0;
+    background:
+        radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(245, 87, 108, 0.1) 0%, transparent 50%),
+        var(--bg-primary);
+}
+
+.dashboard-header {
+    text-align: center;
+    margin-bottom: var(--spacing-2xl);
+    padding: var(--spacing-xl) 0;
+}
+
+.dashboard-header h1 {
+    font-size: 3.5rem;
+    margin-bottom: var(--spacing-md);
+    letter-spacing: -0.02em;
+}
+
+.dashboard-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.8;
+}
+
+.activities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--spacing-xl);
+    animation: fadeIn 0.6s ease-out;
+}
+
+@media (max-width: 768px) {
+    .dashboard {
+        padding: var(--spacing-lg) 0;
+    }
+
+    .dashboard-header h1 {
+        font-size: 2.5rem;
+    }
+
+    .dashboard-subtitle {
+        font-size: 1rem;
+        padding: 0 var(--spacing-sm);
+    }
+
+    .activities-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+}
+
+@media (min-width: 1400px) {
+    .activities-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
