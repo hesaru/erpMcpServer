@@ -120,45 +120,62 @@
 }
 
 .form-input-wrapper {
-    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1.5px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background: var(--bg-surface);
+    transition: all var(--transition-fast);
+    overflow: hidden;
 }
 
-.form-input-wrapper svg {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
+.form-input-wrapper:focus-within {
+    border-color: var(--purple-400);
+    box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+}
+
+.form-input-icon {
+    flex-shrink: 0;
+    margin-left: 14px;
     color: var(--text-muted);
-    pointer-events: none;
     transition: color var(--transition-fast);
 }
 
-.form-input-wrapper input:focus+svg,
-.form-input-wrapper:focus-within svg {
+.form-input-wrapper:focus-within .form-input-icon {
     color: var(--purple-500);
 }
 
 .form-input {
     width: 100%;
-    padding: 0.75rem 0.875rem 0.75rem 2.75rem;
+    padding: 0.875rem 1rem 0.875rem 0.75rem;
     font-size: 0.9375rem;
     font-family: inherit;
-    border: 1.5px solid var(--border-default);
-    border-radius: var(--radius-lg);
-    background: var(--bg-muted);
+    border: none;
+    background: transparent;
     color: var(--text-primary);
-    transition: all var(--transition-fast);
     outline: none;
-}
-
-.form-input:focus {
-    border-color: var(--purple-400);
-    background: var(--bg-surface);
-    box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 .form-input::placeholder {
     color: var(--text-muted);
+    opacity: 0.7;
+}
+
+/* Override browser autofill styles */
+.form-input:-webkit-autofill,
+.form-input:-webkit-autofill:hover,
+.form-input:-webkit-autofill:focus,
+.form-input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px var(--bg-surface) inset !important;
+    box-shadow: 0 0 0 30px var(--bg-surface) inset !important;
+    -webkit-text-fill-color: var(--text-primary) !important;
+    font-size: 0.9375rem !important;
+    font-family: inherit !important;
+    caret-color: var(--text-primary);
+    transition: background-color 5000s ease-in-out 0s;
 }
 
 .login-btn {

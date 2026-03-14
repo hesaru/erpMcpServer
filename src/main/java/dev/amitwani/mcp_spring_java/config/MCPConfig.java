@@ -2,7 +2,7 @@ package dev.amitwani.mcp_spring_java.config;
 
 import dev.amitwani.mcp_spring_java.service.GitHubMcpTools;
 import dev.amitwani.mcp_spring_java.service.JiraMcpTools;
-import dev.amitwani.mcp_spring_java.service.UserService;
+import dev.amitwani.mcp_spring_java.service.WellBeingMcpTools;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.tool.method.MethodToolCallbackProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,22 +12,22 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 public class MCPConfig {
 
-    private final UserService userService;
     private final JiraMcpTools jiraMcpTools;
     private final GitHubMcpTools gitHubMcpTools;
+    private final WellBeingMcpTools wellBeingMcpTools;
 
     @Autowired
-    public MCPConfig(UserService userService, JiraMcpTools jiraMcpTools, GitHubMcpTools gitHubMcpTools) {
-        this.userService = userService;
+    public MCPConfig(JiraMcpTools jiraMcpTools, GitHubMcpTools gitHubMcpTools, WellBeingMcpTools wellBeingMcpTools) {
         this.jiraMcpTools = jiraMcpTools;
         this.gitHubMcpTools = gitHubMcpTools;
+        this.wellBeingMcpTools = wellBeingMcpTools;
     }
 
     @Bean
     ToolCallbackProvider userTools() {
         return MethodToolCallbackProvider
                 .builder()
-                .toolObjects(userService, jiraMcpTools, gitHubMcpTools)
+                .toolObjects(jiraMcpTools, gitHubMcpTools, wellBeingMcpTools)
                 .build();
     }
 

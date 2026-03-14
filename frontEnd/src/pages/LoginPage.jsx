@@ -101,6 +101,7 @@ const LoginPage = () => {
                         <div className="form-group">
                             <label htmlFor="username">Username</label>
                             <div className="form-input-wrapper">
+                                <User size={18} className="form-input-icon" />
                                 <input
                                     id="username"
                                     type="text"
@@ -111,13 +112,13 @@ const LoginPage = () => {
                                     required
                                     autoFocus
                                 />
-                                <User size={18} />
                             </div>
                         </div>
 
                         <div className="form-group">
                             <label htmlFor="password">Password</label>
                             <div className="form-input-wrapper">
+                                <Lock size={18} className="form-input-icon" />
                                 <input
                                     id="password"
                                     type="password"
@@ -127,7 +128,6 @@ const LoginPage = () => {
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
                                 />
-                                <Lock size={18} />
                             </div>
                         </div>
 
@@ -168,6 +168,7 @@ const LoginPage = () => {
                             <div className="form-group">
                                 <label htmlFor="newPassword">New Password</label>
                                 <div className="form-input-wrapper">
+                                    <Lock size={18} className="form-input-icon" />
                                     <input
                                         id="newPassword"
                                         type="password"
@@ -178,13 +179,13 @@ const LoginPage = () => {
                                         required
                                         autoFocus
                                     />
-                                    <Lock size={18} />
                                 </div>
                             </div>
 
                             <div className="form-group">
                                 <label htmlFor="confirmPassword">Confirm Password</label>
                                 <div className="form-input-wrapper">
+                                    <Lock size={18} className="form-input-icon" />
                                     <input
                                         id="confirmPassword"
                                         type="password"
@@ -194,7 +195,6 @@ const LoginPage = () => {
                                         onChange={(e) => setConfirmPassword(e.target.value)}
                                         required
                                     />
-                                    <Lock size={18} />
                                 </div>
                             </div>
 

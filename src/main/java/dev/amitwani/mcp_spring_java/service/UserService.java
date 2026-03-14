@@ -146,14 +146,15 @@ public class UserService {
     }
   }
 
-  @Tool(name = "getUserGitCommitsByUserName", description = "Get a user's git commit history. These commits may reflect performance and stress levels.")
+  // Legacy data accessors (no longer exposed as MCP tools — real data tools are in
+  // GitHubMcpTools, JiraMcpTools, and WellBeingMcpTools)
+
   public List<CommitHistory> getCommitHistoryByUser(String userName) {
     return commitList.stream()
         .filter(commit -> commit.getUser().getUserName().equalsIgnoreCase(userName))
         .collect(Collectors.toList());
   }
 
-  @Tool(name = "getAllUsers", description = "Get the list of all users in the system.")
   public List<User> getAllUsers() {
     return commitList.stream()
         .map(CommitHistory::getUser)
@@ -161,17 +162,14 @@ public class UserService {
         .collect(Collectors.toList());
   }
 
-  @Tool(name = "getAllCommits", description = "Get the list of all git commits by all users.")
   public List<CommitHistory> getAllCommits() {
     return commitList;
   }
 
-  @Tool(name = "getAllJiraTickets", description = "Get the list of all Jira tickets.")
   public List<JiraTicket> getAllJiraTickets() {
     return jiraTickets;
   }
 
-  @Tool(name = "getJiraTicketsByUser", description = "Get Jira tickets assigned to a user based on their comments.")
   public List<JiraTicket> getJiraTicketsByUser(String userName) {
     return jiraTickets.stream()
         .filter(ticket -> ticket.getComments().stream()
