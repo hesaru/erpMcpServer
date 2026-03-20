@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
+import AppLayout from './components/AppLayout'
 import LoginPage from './pages/LoginPage'
 import Dashboard from './pages/Dashboard'
 import EditBacklog from './pages/EditBacklog'
@@ -21,46 +22,60 @@ function App() {
           {/* Protected routes - any authenticated user */}
           <Route path="/" element={
             <ProtectedRoute>
-              <Dashboard />
+              <AppLayout>
+                <Dashboard />
+              </AppLayout>
             </ProtectedRoute>
           } />
 
           <Route path="/backlog-management" element={
             <ProtectedRoute>
-              <BacklogManagement />
+              <AppLayout>
+                <BacklogManagement />
+              </AppLayout>
             </ProtectedRoute>
           } />
 
           {/* Admin & Manager routes */}
           <Route path="/edit-backlog" element={
             <ProtectedRoute allowedRoles={['ADMIN', 'MANAGER']}>
-              <EditBacklog />
+              <AppLayout>
+                <EditBacklog />
+              </AppLayout>
             </ProtectedRoute>
           } />
 
           <Route path="/employee-management" element={
             <ProtectedRoute allowedRoles={['ADMIN', 'MANAGER']}>
-              <EmployeeManagement />
+              <AppLayout>
+                <EmployeeManagement />
+              </AppLayout>
             </ProtectedRoute>
           } />
 
           <Route path="/employee-wellbeing" element={
             <ProtectedRoute allowedRoles={['ADMIN', 'MANAGER']}>
-              <EmployeeWellBeing />
+              <AppLayout>
+                <EmployeeWellBeing />
+              </AppLayout>
             </ProtectedRoute>
           } />
 
           {/* Employee & Manager routes */}
           <Route path="/leave-management" element={
             <ProtectedRoute allowedRoles={['EMPLOYEE', 'MANAGER']}>
-              <LeaveManagement />
+              <AppLayout>
+                <LeaveManagement />
+              </AppLayout>
             </ProtectedRoute>
           } />
 
           {/* Admin only routes */}
           <Route path="/admin" element={
             <ProtectedRoute allowedRoles={['ADMIN']}>
-              <AdminPanel />
+              <AppLayout>
+                <AdminPanel />
+              </AppLayout>
             </ProtectedRoute>
           } />
         </Routes>

@@ -130,8 +130,8 @@ const EditBacklog = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        // Only submit if we're on step 2 or in edit mode
-        if (!isEditMode && currentStep === 1) {
+        // Only submit if we're on step 2 (both create and edit mode)
+        if (currentStep === 1) {
             handleNextStep(e)
             return
         }
@@ -213,9 +213,7 @@ const EditBacklog = () => {
         if (Object.keys(newErrors).length === 0) {
             setCurrentStep(2)
             // Automatically fetch AI suggestions when moving to step 2
-            if (!isEditMode) {
-                fetchAiSuggestions()
-            }
+            fetchAiSuggestions()
         }
     }
 
@@ -275,8 +273,8 @@ const EditBacklog = () => {
                     )}
 
                     <form onSubmit={handleSubmit} className="task-form">
-                        {/* Step 1: Task Details (or all fields in edit mode) */}
-                        {(currentStep === 1 || isEditMode) && (
+                        {/* Step 1: Task Details */}
+                        {currentStep === 1 && (
                             <>
                                 <div className="form-row">
                                     <div className="form-group full-width">
@@ -345,127 +343,57 @@ const EditBacklog = () => {
                                     </div>
                                 </div>
 
-                                {/* Show assignee in edit mode */}
-                                {isEditMode && (
-                                    <div className="form-row">
-                                        <div className="form-group">
-                                            <label htmlFor="assignee">Assignee</label>
-                                            <select
-                                                id="assignee"
-                                                name="assignee"
-                                                value={formData.assignee}
-                                                onChange={handleChange}
-                                            >
-                                                <option value="">Unassigned</option>
-                                                {employees.map(emp => (
-                                                    <option key={emp.id} value={emp.id}>
-                                                        {emp.firstName} {emp.lastName} (@{emp.userName})
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
 
-                                        <div className="form-group">
-                                            <label htmlFor="storyPoints">Story Points</label>
-                                            <input
-                                                type="number"
-                                                id="storyPoints"
-                                                name="storyPoints"
-                                                value={formData.storyPoints}
-                                                onChange={handleChange}
-                                                placeholder="0"
-                                                min="0"
-                                                className={errors.storyPoints ? 'error' : ''}
-                                            />
-                                            {errors.storyPoints && <span className="error-message">{errors.storyPoints}</span>}
-                                        </div>
+
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label htmlFor="storyPoints">Story Points</label>
+                                        <input
+                                            type="number"
+                                            id="storyPoints"
+                                            name="storyPoints"
+                                            value={formData.storyPoints}
+                                            onChange={handleChange}
+                                            placeholder="0"
+                                            min="0"
+                                            className={errors.storyPoints ? 'error' : ''}
+                                        />
+                                        {errors.storyPoints && <span className="error-message">{errors.storyPoints}</span>}
                                     </div>
-                                )}
 
-                                {/* Story points for create mode (step 1) */}
-                                {!isEditMode && (
-                                    <div className="form-row">
-                                        <div className="form-group">
-                                            <label htmlFor="storyPoints">Story Points</label>
-                                            <input
-                                                type="number"
-                                                id="storyPoints"
-                                                name="storyPoints"
-                                                value={formData.storyPoints}
-                                                onChange={handleChange}
-                                                placeholder="0"
-                                                min="0"
-                                                className={errors.storyPoints ? 'error' : ''}
-                                            />
-                                            {errors.storyPoints && <span className="error-message">{errors.storyPoints}</span>}
-                                        </div>
-
-                                        <div className="form-group">
-                                            <label htmlFor="dueDate">Due Date</label>
-                                            <input
-                                                type="datetime-local"
-                                                id="dueDate"
-                                                name="dueDate"
-                                                value={formData.dueDate}
-                                                onChange={handleChange}
-                                            />
-                                        </div>
+                                    <div className="form-group">
+                                        <label htmlFor="dueDate">Due Date</label>
+                                        <input
+                                            type="datetime-local"
+                                            id="dueDate"
+                                            name="dueDate"
+                                            value={formData.dueDate}
+                                            onChange={handleChange}
+                                        />
                                     </div>
-                                )}
+                                </div>
 
-                                {isEditMode && (
-                                    <div className="form-row">
-                                        <div className="form-group">
-                                            <label htmlFor="dueDate">Due Date</label>
-                                            <input
-                                                type="datetime-local"
-                                                id="dueDate"
-                                                name="dueDate"
-                                                value={formData.dueDate}
-                                                onChange={handleChange}
-                                            />
-                                        </div>
-
-                                        <div className="form-group">
-                                            <label htmlFor="source">Source</label>
-                                            <select
-                                                id="source"
-                                                name="source"
-                                                value={formData.source}
-                                                onChange={handleChange}
-                                            >
-                                                <option value="MANUAL">Manual</option>
-                                                <option value="JIRA">Jira</option>
-                                                <option value="GITHUB">GitHub</option>
-                                                <option value="EMAIL">Email</option>
-                                            </select>
-                                        </div>
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label htmlFor="source">Source</label>
+                                        <select
+                                            id="source"
+                                            name="source"
+                                            value={formData.source}
+                                            onChange={handleChange}
+                                        >
+                                            <option value="MANUAL">Manual</option>
+                                            <option value="JIRA">Jira</option>
+                                            <option value="GITHUB">GitHub</option>
+                                            <option value="EMAIL">Email</option>
+                                        </select>
                                     </div>
-                                )}
-
-                                {!isEditMode && (
-                                    <div className="form-row">
-                                        <div className="form-group">
-                                            <label htmlFor="source">Source</label>
-                                            <select
-                                                id="source"
-                                                name="source"
-                                                value={formData.source}
-                                                onChange={handleChange}
-                                            >
-                                                <option value="MANUAL">Manual</option>
-                                                <option value="JIRA">Jira</option>
-                                                <option value="GITHUB">GitHub</option>
-                                                <option value="EMAIL">Email</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                )}
+                                </div>
                             </>
                         )}
 
-                        {/* Step 2: Assignee Selection (create mode only) */}
-                        {currentStep === 2 && !isEditMode && (
+                        {/* Step 2: Assignee Selection (both create and edit mode) */}
+                        {currentStep === 2 && (
                             <>
                                 <div className="form-row">
                                     <div className="form-group full-width">
@@ -570,7 +498,7 @@ const EditBacklog = () => {
                         )}
 
                         <div className="form-actions">
-                            {currentStep === 2 && !isEditMode && (
+                            {currentStep === 2 && (
                                 <button
                                     type="button"
                                     className="cancel-button"
@@ -580,17 +508,7 @@ const EditBacklog = () => {
                                     ← Back
                                 </button>
                             )}
-                            {currentStep === 1 && !isEditMode && (
-                                <button
-                                    type="button"
-                                    className="cancel-button"
-                                    onClick={handleCancel}
-                                    disabled={saving}
-                                >
-                                    Cancel
-                                </button>
-                            )}
-                            {isEditMode && (
+                            {currentStep === 1 && (
                                 <button
                                     type="button"
                                     className="cancel-button"
@@ -601,7 +519,7 @@ const EditBacklog = () => {
                                 </button>
                             )}
 
-                            {currentStep === 1 && !isEditMode ? (
+                            {currentStep === 1 ? (
                                 <button
                                     type="button"
                                     className="submit-button"

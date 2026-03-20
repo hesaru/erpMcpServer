@@ -229,14 +229,14 @@ const BacklogManagement = () => {
                                                 onClick={() => handleEditTask(task.id)}
                                                 title="Edit task"
                                             >
-                                                <Pencil size={14} />
+                                                <Pencil size={14} /> Edit
                                             </button>
                                             <button
                                                 className="action-btn delete-btn"
                                                 onClick={() => handleDeleteTask(task.id)}
                                                 title="Delete task"
                                             >
-                                                <Trash2 size={14} />
+                                                <Trash2 size={14} /> Delete
                                             </button>
                                         </div>
                                     </div>
