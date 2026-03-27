@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8090/api';
+const API_BASE_URL = `${import.meta.env.VITE_MCP_SERVER_URL || 'http://localhost:8090'}/api`;
 
 /**
  * Get the stored JWT token

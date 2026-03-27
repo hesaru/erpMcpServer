@@ -1,6 +1,6 @@
 import { getAuthHeaders } from './authApi';
 
-const API_BASE_URL = 'http://localhost:8090/api';
+const API_BASE_URL = `${import.meta.env.VITE_MCP_SERVER_URL || 'http://localhost:8090'}/api`;
 
 /**
  * Employee API Service

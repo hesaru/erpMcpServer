@@ -1,4 +1,4 @@
-const AI_API_BASE_URL = 'http://localhost:8080';
+const AI_API_BASE_URL = import.meta.env.VITE_MCP_CLIENT_URL || 'http://localhost:8080';
 
 /**
  * AI API Service
