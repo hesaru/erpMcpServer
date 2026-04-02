@@ -34,15 +34,6 @@ const Dashboard = () => {
             image: backlogImg
         },
         {
-            title: 'Employee Management',
-            description: 'Manage your team members, track roles, and oversee organizational structure.',
-            icon: <Users size={24} strokeWidth={1.8} />,
-            gradient: 'linear-gradient(135deg, #6b21a8 0%, #a855f7 100%)',
-            path: '/employee-management',
-            roles: ['ADMIN', 'MANAGER'],
-            image: employeeImg
-        },
-        {
             title: 'Employee Well Being',
             description: 'Monitor team wellness, workload balance, and mental health indicators to maintain a healthy work environment.',
             icon: <Heart size={24} strokeWidth={1.8} />,

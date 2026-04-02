@@ -63,8 +63,10 @@ public class AuthService {
     }
 
     public AppUser register(RegisterRequest request) {
+        log.debug("Attempting to register user with username: '{}'", request.getUsername());
         if (appUserRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username already exists");
+            log.warn("Registration failed — username '{}' already exists in app_users table", request.getUsername());
+            throw new RuntimeException("Username already exists: " + request.getUsername());
         }
 
         UserRole role;
@@ -117,5 +119,85 @@ public class AuthService {
 
     public List<AppUser> getAllUsers() {
         return appUserRepository.findAll();
+    }
+
+    /**
+     * Delete a user and their linked employee record.
+     */
+    public void deleteUser(Long userId) {
+        AppUser user = appUserRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Prevent deleting the admin user
+        if (user.getRole() == UserRole.ADMIN) {
+            throw new RuntimeException("Cannot delete admin user");
+        }
+
+        Employee employee = user.getEmployee();
+
+        // Delete the AppUser first (has FK to Employee)
+        appUserRepository.delete(user);
+
+        // Then delete the Employee record
+        if (employee != null) {
+            employeeRepository.delete(employee);
+        }
+
+        log.info("Deleted user '{}' and linked employee record", user.getUsername());
+    }
+
+    /**
+     * Update user profile fields (employee details + role).
+     */
+    public AppUser updateUser(Long userId, RegisterRequest request) {
+        AppUser user = appUserRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getRole() == UserRole.ADMIN) {
+            throw new RuntimeException("Cannot modify admin user");
+        }
+
+        // Update role if changed
+        if (request.getRole() != null) {
+            UserRole newRole = UserRole.valueOf(request.getRole().toUpperCase());
+            if (newRole == UserRole.ADMIN) {
+                throw new RuntimeException("Cannot promote to admin");
+            }
+            user.setRole(newRole);
+        }
+
+        // Update linked employee profile
+        Employee employee = user.getEmployee();
+        if (employee != null) {
+            if (request.getFirstName() != null) employee.setFirstName(request.getFirstName());
+            if (request.getLastName() != null) employee.setLastName(request.getLastName());
+            if (request.getEmail() != null) employee.setEmail(request.getEmail());
+            if (request.getPosition() != null) employee.setPosition(request.getPosition());
+            if (request.getJiraAccountId() != null) employee.setJiraAccountId(request.getJiraAccountId());
+            if (request.getGithubUsername() != null) employee.setGithubUsername(request.getGithubUsername());
+            employeeRepository.save(employee);
+        }
+
+        appUserRepository.save(user);
+        log.info("Updated user '{}'", user.getUsername());
+        return user;
+    }
+
+    /**
+     * Admin resets a user's password to a temporary value.
+     * The user will be forced to change it on next login.
+     */
+    public void resetUserPassword(Long userId, String newPassword) {
+        AppUser user = appUserRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getRole() == UserRole.ADMIN) {
+            throw new RuntimeException("Cannot reset admin password");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setMustChangePassword(true);
+        appUserRepository.save(user);
+        log.info("Admin reset password for user '{}'", user.getUsername());
     }
 }

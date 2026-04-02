@@ -6,11 +6,13 @@ import {
     RefreshCw, Search, User, AlertTriangle, Brain, X, ChevronDown
 } from 'lucide-react';
 import wellbeingApi from '../services/wellbeingApi';
+import { useModel } from '../context/ModelContext';
 import './PageLayout.css';
 import './EmployeeWellBeing.css';
 
 const EmployeeWellBeing = () => {
     const navigate = useNavigate();
+    const { selectedModel } = useModel();
 
     // Top 3 at-risk state
     const [topAtRisk, setTopAtRisk] = useState([]);
@@ -39,7 +41,7 @@ const EmployeeWellBeing = () => {
             setAllEmployees(rawData || []);
 
             // Fetch AI-analyzed top 3
-            const top3 = await wellbeingApi.getTopAtRiskEmployees();
+            const top3 = await wellbeingApi.getTopAtRiskEmployees(selectedModel);
             setTopAtRisk(top3);
         } catch (err) {
             console.error("Failed to load top at-risk data", err);
@@ -79,7 +81,7 @@ const EmployeeWellBeing = () => {
         setSelectedError(null);
 
         try {
-            const analyzed = await wellbeingApi.getEmployeeAnalysis(employee.employeeId);
+            const analyzed = await wellbeingApi.getEmployeeAnalysis(employee.employeeId, selectedModel);
             if (analyzed) {
                 setSelectedEmployee(analyzed);
             } else {

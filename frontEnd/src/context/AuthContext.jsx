@@ -16,18 +16,11 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Check if user is already logged in
-        const storedUser = localStorage.getItem('user');
-        const token = localStorage.getItem('token');
-
-        if (storedUser && token) {
-            try {
-                setUser(JSON.parse(storedUser));
-            } catch {
-                localStorage.removeItem('user');
-                localStorage.removeItem('token');
-            }
-        }
+        // Always start fresh – clear any previous session so the user
+        // is redirected to the login page on every browser load / refresh.
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setUser(null);
         setLoading(false);
     }, []);
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import employeeApi from '../services/employeeApi'
-import { ArrowLeft, Search, Plus, X, Trash2, User, AtSign, Briefcase, Calendar, Mail } from 'lucide-react'
+import { ArrowLeft, Search, Trash2, User, Users } from 'lucide-react'
 import './PageLayout.css'
 import './EmployeeManagement.css'
 
@@ -11,15 +11,6 @@ const EmployeeManagement = () => {
     const [searchQuery, setSearchQuery] = useState('')
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
-    const [showForm, setShowForm] = useState(false)
-    const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        userName: '',
-        position: '',
-        email: '',
-        dateOfJoining: ''
-    })
 
     useEffect(() => {
         fetchEmployees()
@@ -56,31 +47,6 @@ const EmployeeManagement = () => {
         }
     }
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target
-        setFormData(prev => ({ ...prev, [name]: value }))
-    }
-
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-        try {
-            await employeeApi.createEmployee(formData)
-            setShowForm(false)
-            setFormData({
-                firstName: '',
-                lastName: '',
-                userName: '',
-                position: '',
-                email: '',
-                dateOfJoining: ''
-            })
-            fetchEmployees()
-        } catch (err) {
-            alert('Failed to create employee')
-            console.error(err)
-        }
-    }
-
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure you want to delete this employee?')) return
         try {
@@ -112,7 +78,7 @@ const EmployeeManagement = () => {
                     <div className="page-icon">👥</div>
                     <h1>Employee Management</h1>
                     <p className="page-description">
-                        Manage your team members and their details
+                        View and manage employee profiles. To add new employees, use the Admin Panel.
                     </p>
                 </div>
 
@@ -128,90 +94,7 @@ const EmployeeManagement = () => {
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
-                    <button
-                        className={`emp-toggle-form-btn ${showForm ? 'active' : ''}`}
-                        onClick={() => setShowForm(!showForm)}
-                    >
-                        {showForm ? <><X size={16} /> Cancel</> : <><Plus size={16} /> Add Employee</>}
-                    </button>
                 </div>
-
-                {/* Add Employee Form */}
-                {showForm && (
-                    <div className="emp-form-card fade-in">
-                        <h3 className="emp-form-title">New Employee</h3>
-                        <form onSubmit={handleSubmit} className="emp-form">
-                            <div className="emp-form-grid">
-                                <div className="emp-field">
-                                    <label><User size={14} /> First Name</label>
-                                    <input
-                                        required
-                                        name="firstName"
-                                        value={formData.firstName}
-                                        onChange={handleInputChange}
-                                        placeholder="Enter first name"
-                                    />
-                                </div>
-                                <div className="emp-field">
-                                    <label><User size={14} /> Last Name</label>
-                                    <input
-                                        required
-                                        name="lastName"
-                                        value={formData.lastName}
-                                        onChange={handleInputChange}
-                                        placeholder="Enter last name"
-                                    />
-                                </div>
-                                <div className="emp-field">
-                                    <label><AtSign size={14} /> Username</label>
-                                    <input
-                                        required
-                                        name="userName"
-                                        value={formData.userName}
-                                        onChange={handleInputChange}
-                                        placeholder="Enter username"
-                                    />
-                                </div>
-                                <div className="emp-field">
-                                    <label><Mail size={14} /> Email</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleInputChange}
-                                        placeholder="Enter email"
-                                    />
-                                </div>
-                                <div className="emp-field">
-                                    <label><Briefcase size={14} /> Position</label>
-                                    <input
-                                        name="position"
-                                        value={formData.position}
-                                        onChange={handleInputChange}
-                                        placeholder="Enter position"
-                                    />
-                                </div>
-                                <div className="emp-field">
-                                    <label><Calendar size={14} /> Date of Joining</label>
-                                    <input
-                                        type="date"
-                                        name="dateOfJoining"
-                                        value={formData.dateOfJoining}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                            </div>
-                            <div className="emp-form-actions">
-                                <button type="button" className="emp-btn-secondary" onClick={() => setShowForm(false)}>
-                                    Cancel
-                                </button>
-                                <button type="submit" className="emp-btn-primary">
-                                    <Plus size={16} /> Save Employee
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                )}
 
                 {/* Employee Table */}
                 <div className="page-content">

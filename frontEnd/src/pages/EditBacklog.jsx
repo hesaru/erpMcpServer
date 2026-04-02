@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import backlogApi from '../services/backlogApi'
 import aiApi from '../services/aiApi'
+import { useModel } from '../context/ModelContext'
 import './PageLayout.css'
 import './EditBacklog.css'
 
@@ -9,6 +10,7 @@ const EditBacklog = () => {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
     const taskId = searchParams.get('id')
+    const { selectedModel } = useModel()
     const isEditMode = !!taskId
 
     const [loading, setLoading] = useState(false)
@@ -180,7 +182,7 @@ const EditBacklog = () => {
             // Build meaningful message from form data
             const message = `Task: ${formData.title}. Description: ${formData.description}. Priority: ${formData.priority}. ${formData.dueDate ? `Due: ${new Date(formData.dueDate).toLocaleDateString()}` : ''}`
 
-            const suggestions = await aiApi.getSuitableAssignees(message)
+            const suggestions = await aiApi.getSuitableAssignees(message, selectedModel)
             setAiSuggestions(suggestions)
         } catch (err) {
             console.error('Failed to fetch AI suggestions:', err)
@@ -223,14 +225,35 @@ const EditBacklog = () => {
         setAiSuggestionsError(null)
     }
 
+    // Helper: find the employee that matches an AI suggestion name
+    const findEmployeeForSuggestion = (suggestion) => {
+        const name = (suggestion.assignee || '').trim().toLowerCase()
+        return employees.find(emp => {
+            const uname = (emp.userName || '').toLowerCase()
+            const fullName = `${emp.firstName || ''} ${emp.lastName || ''}`.trim().toLowerCase()
+            const first = (emp.firstName || '').toLowerCase()
+            return uname === name || fullName === name || first === name || name.includes(uname) || name.includes(first)
+        })
+    }
+
     const handleSelectAiSuggestion = (suggestion) => {
-        // Find the employee by username (asignee field)
-        const employee = employees.find(emp => emp.userName === suggestion.assignee)
+        // The AI may return a full name (e.g. "hesaru wannigama"), a username,
+        // or a first-name — try several matching strategies.
+        const name = (suggestion.assignee || '').trim().toLowerCase()
+        const employee = employees.find(emp => {
+            const uname = (emp.userName || '').toLowerCase()
+            const fullName = `${emp.firstName || ''} ${emp.lastName || ''}`.trim().toLowerCase()
+            const first = (emp.firstName || '').toLowerCase()
+            return uname === name || fullName === name || first === name || name.includes(uname) || name.includes(first)
+        })
+
         if (employee) {
             setFormData(prev => ({
                 ...prev,
-                assignee: employee.id
+                assignee: Number(employee.id)
             }))
+        } else {
+            console.warn('Could not match AI suggestion to an employee:', suggestion.assignee)
         }
     }
 
@@ -413,7 +436,7 @@ const EditBacklog = () => {
                                                 {aiSuggestions.map((suggestion, index) => (
                                                     <div
                                                         key={index}
-                                                        className={`suggestion-card ${formData.assignee === employees.find(e => e.userName === suggestion.assignee)?.id ? 'selected' : ''}`}
+                                                        className={`suggestion-card ${formData.assignee === Number(findEmployeeForSuggestion(suggestion)?.id) ? 'selected' : ''}`}
                                                     >
                                                         <div className="suggestion-header">
                                                             <h3>@{suggestion.assignee}</h3>
@@ -422,7 +445,7 @@ const EditBacklog = () => {
                                                                 className="select-button"
                                                                 onClick={() => handleSelectAiSuggestion(suggestion)}
                                                             >
-                                                                {formData.assignee === employees.find(e => e.userName === suggestion.assignee)?.id ? '✓ Selected' : 'Select'}
+                                                                {formData.assignee === Number(findEmployeeForSuggestion(suggestion)?.id) ? '✓ Selected' : 'Select'}
                                                             </button>
                                                         </div>
                                                         <div className="suggestion-details">
@@ -489,7 +512,7 @@ const EditBacklog = () => {
                                     <div className="form-row">
                                         <div className="form-group full-width">
                                             <p style={{ color: 'var(--purple-700)', fontSize: '0.875rem', fontWeight: 500 }}>
-                                                ✓ Selected: {employees.find(e => e.id === formData.assignee)?.firstName} {employees.find(e => e.id === formData.assignee)?.lastName}
+                                                ✓ Selected: {employees.find(e => Number(e.id) === formData.assignee)?.firstName} {employees.find(e => Number(e.id) === formData.assignee)?.lastName}
                                             </p>
                                         </div>
                                     </div>

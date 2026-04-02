@@ -4,16 +4,20 @@ const AI_API_BASE_URL = 'http://localhost:8080';
  * AI API Service
  * Handles all AI-related API calls.
  * Uses structured endpoints with BeanOutputConverter for guaranteed response format.
+ * All methods accept an optional `model` parameter ('openai' or 'gemini').
  */
 const aiApi = {
     /**
      * Get suitable assignee suggestions based on task context
      * @param {string} message - Context message describing the task
+     * @param {string} model - AI model to use ('openai' or 'gemini')
      * @returns {Promise<Array>} Array of assignee suggestions with reason and history
      */
-    getSuitableAssignees: async (message) => {
+    getSuitableAssignees: async (message, model = 'openai') => {
         try {
-            const response = await fetch(`${AI_API_BASE_URL}/suitableAsigneesList?message=${encodeURIComponent(message)}`);
+            const response = await fetch(
+                `${AI_API_BASE_URL}/suitableAsigneesList?message=${encodeURIComponent(message)}&model=${encodeURIComponent(model)}`
+            );
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -21,7 +25,7 @@ const aiApi = {
 
             return await response.json();
         } catch (error) {
-            console.error('Error fetching AI assignee suggestions:', error);
+            console.error(`Error fetching AI assignee suggestions [Model: ${model}]:`, error);
             throw error;
         }
     },
@@ -31,11 +35,14 @@ const aiApi = {
      * AI uses MCP tools (getEmployeeWellBeingMetrics) to fetch data and make decisions.
      * Returns structured EmployeeStressResult objects via BeanOutputConverter.
      *
+     * @param {string} model - AI model to use ('openai' or 'gemini')
      * @returns {Promise<Array>} Top 3 EmployeeStressResult objects
      */
-    analyzeTopAtRisk: async () => {
+    analyzeTopAtRisk: async (model = 'openai') => {
         try {
-            const response = await fetch(`${AI_API_BASE_URL}/analyzeTopStress`);
+            const response = await fetch(
+                `${AI_API_BASE_URL}/analyzeTopStress?model=${encodeURIComponent(model)}`
+            );
 
             if (!response.ok) {
                 throw new Error(`AI API error: ${response.status}`);
@@ -43,7 +50,7 @@ const aiApi = {
 
             return await response.json();
         } catch (error) {
-            console.error('Error in AI top-at-risk analysis:', error);
+            console.error(`Error in AI top-at-risk analysis [Model: ${model}]:`, error);
             throw error;
         }
     },
@@ -54,11 +61,14 @@ const aiApi = {
      * Returns a structured EmployeeStressResult object via BeanOutputConverter.
      *
      * @param {number} employeeId - The employee's ID
+     * @param {string} model - AI model to use ('openai' or 'gemini')
      * @returns {Promise<Object>} EmployeeStressResult object
      */
-    analyzeEmployeeStress: async (employeeId) => {
+    analyzeEmployeeStress: async (employeeId, model = 'openai') => {
         try {
-            const response = await fetch(`${AI_API_BASE_URL}/analyzeEmployeeStress?employeeId=${employeeId}`);
+            const response = await fetch(
+                `${AI_API_BASE_URL}/analyzeEmployeeStress?employeeId=${employeeId}&model=${encodeURIComponent(model)}`
+            );
 
             if (!response.ok) {
                 throw new Error(`AI API error: ${response.status}`);
@@ -66,7 +76,7 @@ const aiApi = {
 
             return await response.json();
         } catch (error) {
-            console.error('Error in AI employee stress analysis:', error);
+            console.error(`Error in AI employee stress analysis [Model: ${model}]:`, error);
             throw error;
         }
     }

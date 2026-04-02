@@ -91,6 +91,12 @@ public class AuthController {
                     map.put("fullName", user.getEmployee() != null
                             ? user.getEmployee().getFirstName() + " " + user.getEmployee().getLastName()
                             : (user.getRole().name().equals("ADMIN") ? "Administrator" : ""));
+                    map.put("firstName", user.getEmployee() != null ? user.getEmployee().getFirstName() : "");
+                    map.put("lastName", user.getEmployee() != null ? user.getEmployee().getLastName() : "");
+                    map.put("email", user.getEmployee() != null ? user.getEmployee().getEmail() : "");
+                    map.put("position", user.getEmployee() != null ? user.getEmployee().getPosition() : "");
+                    map.put("jiraAccountId", user.getEmployee() != null ? user.getEmployee().getJiraAccountId() : "");
+                    map.put("githubUsername", user.getEmployee() != null ? user.getEmployee().getGithubUsername() : "");
                     map.put("createdAt", user.getCreatedAt());
                     return map;
                 })
@@ -126,5 +132,50 @@ public class AuthController {
                 })
                 .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                         (Object) Map.of("error", "Not authenticated"))));
+    }
+
+    @DeleteMapping("/users/{id}")
+    public Mono<ResponseEntity<Object>> deleteUser(@PathVariable Long id) {
+        try {
+            authService.deleteUser(id);
+            return Mono.just(ResponseEntity.ok((Object) Map.of("message", "User deleted successfully")));
+        } catch (RuntimeException e) {
+            return Mono.just(ResponseEntity.badRequest().body(
+                    (Object) Map.of("error", e.getMessage())));
+        }
+    }
+
+    @PutMapping("/users/{id}")
+    public Mono<ResponseEntity<Object>> updateUser(@PathVariable Long id,
+                                                     @RequestBody RegisterRequest request) {
+        try {
+            AppUser user = authService.updateUser(id, request);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "User updated successfully");
+            response.put("username", user.getUsername());
+            response.put("role", user.getRole().name());
+            return Mono.just(ResponseEntity.ok((Object) response));
+        } catch (RuntimeException e) {
+            return Mono.just(ResponseEntity.badRequest().body(
+                    (Object) Map.of("error", e.getMessage())));
+        }
+    }
+
+    @PostMapping("/users/{id}/reset-password")
+    public Mono<ResponseEntity<Object>> resetPassword(@PathVariable Long id,
+                                                        @RequestBody Map<String, String> body) {
+        try {
+            String newPassword = body.get("newPassword");
+            if (newPassword == null || newPassword.isBlank()) {
+                return Mono.just(ResponseEntity.badRequest().body(
+                        (Object) Map.of("error", "New password is required")));
+            }
+            authService.resetUserPassword(id, newPassword);
+            return Mono.just(ResponseEntity.ok(
+                    (Object) Map.of("message", "Password reset successfully. User must change password on next login.")));
+        } catch (RuntimeException e) {
+            return Mono.just(ResponseEntity.badRequest().body(
+                    (Object) Map.of("error", e.getMessage())));
+        }
     }
 }

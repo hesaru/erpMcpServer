@@ -35,10 +35,10 @@ const wellbeingApi = {
      *
      * @returns {Promise<Array>} Top 3 employees with AI stress analysis + raw metrics
      */
-    getTopAtRiskEmployees: async () => {
+    getTopAtRiskEmployees: async (model = 'openai') => {
         try {
             // 1. Fetch AI-analyzed top 3 (structured response)
-            const aiResults = await aiApi.analyzeTopAtRisk();
+            const aiResults = await aiApi.analyzeTopAtRisk(model);
             if (!aiResults || aiResults.length === 0) return [];
 
             // 2. Fetch raw data for full metric details
@@ -70,10 +70,10 @@ const wellbeingApi = {
      * @param {number} employeeId - The employee ID
      * @returns {Promise<Object|null>} Employee data with AI stress analysis
      */
-    getEmployeeAnalysis: async (employeeId) => {
+    getEmployeeAnalysis: async (employeeId, model = 'openai') => {
         try {
             // 1. Fetch AI-analyzed stress (structured response)
-            const aiResult = await aiApi.analyzeEmployeeStress(employeeId);
+            const aiResult = await aiApi.analyzeEmployeeStress(employeeId, model);
             if (!aiResult) return null;
 
             // 2. Fetch raw data for full metric details

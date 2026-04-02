@@ -93,6 +93,30 @@ const authApi = {
         const response = await authAxios.get('/auth/me');
         return response.data;
     },
+
+    /**
+     * Delete a user and linked employee (admin only)
+     */
+    deleteUser: async (userId) => {
+        const response = await authAxios.delete(`/auth/users/${userId}`);
+        return response.data;
+    },
+
+    /**
+     * Update a user's profile (admin only)
+     */
+    updateUser: async (userId, userData) => {
+        const response = await authAxios.put(`/auth/users/${userId}`, userData);
+        return response.data;
+    },
+
+    /**
+     * Reset a user's password (admin only)
+     */
+    resetPassword: async (userId, newPassword) => {
+        const response = await authAxios.post(`/auth/users/${userId}/reset-password`, { newPassword });
+        return response.data;
+    },
 };
 
 export default authApi;
