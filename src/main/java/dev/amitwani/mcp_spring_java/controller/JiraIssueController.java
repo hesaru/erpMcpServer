@@ -16,11 +16,6 @@ import java.util.Map;
 /**
  * REST controller for Jira issue management.
  *
- * Endpoints:
- * GET /api/jira/issues - list all synced issues (with optional ?status= filter)
- * GET /api/jira/issues/{key} - get issue by Jira key
- * POST /api/jira/issues - create issue in Atlassian + save to DB
- * POST /api/jira/sync - trigger manual sync now
  */
 @RestController
 @RequestMapping("/api/jira")

@@ -16,28 +16,22 @@ public class EmployeeWellBeingDto {
     private String githubUsername;
     private String jiraAccountId;
 
-    // Leave metrics
     private int totalLeaves;
     private int approvedLeaves;
     private int pendingLeaves;
     private int declinedLeaves;
 
-    // Jira workload
     private int jiraIssueCount;
     private int jiraOpenCount;
 
-    // GitHub activity
     private int gitCommitCount;
 
-    // Backlog task load
     private int taskCount;
     private int taskTodoCount;
     private int taskInProgressCount;
     private int taskDoneCount;
 
-    // Overall stress index (0-100)
     private int stressScore;
 
-    // LOW / MEDIUM / HIGH / CRITICAL
     private String stressLevel;
 }

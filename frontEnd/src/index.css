@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-  /* ─── Primary Purple Palette ─── */
   --purple-50: #faf5ff;
   --purple-100: #f3e8ff;
   --purple-200: #e9d5ff;
@@ -13,7 +12,6 @@
   --purple-800: #6b21a8;
   --purple-900: #581c87;
 
-  /* ─── Neutral Palette ─── */
   --gray-50: #f9fafb;
   --gray-100: #f3f4f6;
   --gray-200: #e5e7eb;
@@ -25,7 +23,7 @@
   --gray-800: #1f2937;
   --gray-900: #111827;
 
-  /* ─── Semantic Colors ─── */
+
   --success: #10b981;
   --success-light: #d1fae5;
   --warning: #f59e0b;
@@ -35,7 +33,7 @@
   --info: #3b82f6;
   --info-light: #dbeafe;
 
-  /* ─── Theme Tokens ─── */
+
   --primary: var(--purple-600);
   --primary-hover: var(--purple-700);
   --primary-light: var(--purple-100);
@@ -57,7 +55,7 @@
   --border-light: var(--gray-100);
   --border-focus: var(--purple-400);
 
-  /* ─── Shadows ─── */
+
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);

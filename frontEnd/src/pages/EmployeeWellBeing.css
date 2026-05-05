@@ -1,9 +1,6 @@
-/* ═══════════════════════════════════════════════
-   EMPLOYEE WELL BEING PAGE STYLES
-   Premium UI — Top 3 At-Risk + Employee Lookup
-   ═══════════════════════════════════════════════ */
 
-/* ─── Page Background ─── */
+
+
 .wellbeing-page {
     background:
         radial-gradient(circle at 10% 20%, rgba(107, 33, 168, 0.03) 0%, transparent 40%),
@@ -11,7 +8,7 @@
         var(--bg-body);
 }
 
-/* ─── Header & Controls ─── */
+
 .wellbeing-header-row {
     display: flex;
     justify-content: space-between;

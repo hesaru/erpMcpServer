@@ -5,18 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * DTO representing a single commit item from the GitHub Commit Search API.
- *
- * Response shape (simplified):
- * {
- * "sha": "abc123...",
- * "html_url": "https://github.com/...",
- * "commit": {
- * "message": "SCRUM-5:Development of trace log auto enable mechanism",
- * "author": { "name": "...", "email": "...", "date": "2025-06-01T10:30:00Z" }
- * },
- * "author": { "login": "sathirauop" },
- * "repository": { "full_name": "owner/repo" }
- * }
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GitHubCommitDto {

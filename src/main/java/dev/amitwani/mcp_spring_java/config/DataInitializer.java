@@ -32,7 +32,7 @@ public class DataInitializer implements CommandLineRunner {
             admin.setEmployee(null);
 
             appUserRepository.save(admin);
-            log.info("✅ Default admin user created (username: admin, password: admin123)");
+            log.info("Default admin user created (username: admin, password: admin123)");
         } else {
             log.info("Admin user already exists, skipping creation.");
         }

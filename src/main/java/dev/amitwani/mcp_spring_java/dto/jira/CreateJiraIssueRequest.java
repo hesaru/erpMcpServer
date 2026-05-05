@@ -7,12 +7,12 @@ package dev.amitwani.mcp_spring_java.dto.jira;
  */
 public class CreateJiraIssueRequest {
 
-    private String summary; // Issue title / summary
-    private String description; // Optional plain-text description
-    private String issueType; // e.g., "Task", "Bug", "Story" — defaults to project default
-    private String assigneeAccountId; // Optional Jira account ID of assignee
-    private String priority; // Optional: Highest, High, Medium, Low, Lowest
-    private Long backlogTaskId; // Optional: link to a local BackLogTask
+    private String summary;
+    private String description;
+    private String issueType;
+    private String assigneeAccountId;
+    private String priority;
+    private Long backlogTaskId;
 
     // Getters and Setters
     public String getSummary() {

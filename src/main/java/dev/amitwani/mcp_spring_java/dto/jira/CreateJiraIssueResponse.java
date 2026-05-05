@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Response DTO from Atlassian when a new issue is created via POST
- * /rest/api/3/issue
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateJiraIssueResponse {

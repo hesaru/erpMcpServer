@@ -7,13 +7,6 @@ import java.util.List;
 
 /**
  * DTO mapping the top-level response from the GitHub Commit Search API.
- *
- * Shape:
- * {
- * "total_count": 42,
- * "incomplete_results": false,
- * "items": [ { ...GitHubCommitDto... }, ... ]
- * }
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GitHubCommitSearchResponse {

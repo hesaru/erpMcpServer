@@ -53,6 +53,12 @@ public class JiraApiClient {
                 .uri("/rest/api/3/search/jql")
                 .bodyValue(body)
                 .retrieve()
+                .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
+                        clientResponse -> clientResponse.bodyToMono(String.class)
+                                .doOnNext(errorBody -> log.error("Jira search API error {}: {}",
+                                        clientResponse.statusCode(), errorBody))
+                                .flatMap(errorBody -> Mono.error(
+                                        new RuntimeException("Jira search failed [" + clientResponse.statusCode() + "]: " + errorBody))))
                 .bodyToMono(JiraSearchResponse.class)
                 .doOnSuccess(resp -> log.debug("Jira search returned {} issues",
                         resp != null && resp.getIssues() != null ? resp.getIssues().size() : 0))
@@ -62,6 +68,8 @@ public class JiraApiClient {
     /**
      * Create a new Jira issue via POST /rest/api/3/issue.
      * The request is assembled from user-provided fields and project config.
+     * If Jira rejects the assignee (stale/invalid account ID), automatically
+     * retries without the assignee so the ticket is still created.
      */
     public Mono<CreateJiraIssueResponse> createIssue(CreateJiraIssueRequest request) {
         String issueTypeName = (request.getIssueType() != null && !request.getIssueType().isBlank())
@@ -89,15 +97,69 @@ public class JiraApiClient {
 
         Map<String, Object> body = Map.of("fields", fields);
 
-        log.info("Creating Jira issue in project {}: {}", jiraProperties.getProjectKey(), request.getSummary());
+        log.info("Creating Jira issue in project {}: {} (assignee={})",
+                jiraProperties.getProjectKey(), request.getSummary(), request.getAssigneeAccountId());
 
         return webClient.post()
                 .uri("/rest/api/3/issue")
                 .bodyValue(body)
                 .retrieve()
+                .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
+                        clientResponse -> clientResponse.bodyToMono(String.class)
+                                .doOnNext(errorBody -> log.error("Jira create issue API error {}: {}",
+                                        clientResponse.statusCode(), errorBody))
+                                .flatMap(errorBody -> Mono.error(
+                                        new RuntimeException("Jira create failed [" + clientResponse.statusCode() + "]: " + errorBody))))
                 .bodyToMono(CreateJiraIssueResponse.class)
                 .doOnSuccess(resp -> log.info("Created Jira issue: {}", resp != null ? resp.getKey() : "unknown"))
-                .doOnError(err -> log.error("Jira create issue API error: {}", err.getMessage()));
+                .onErrorResume(err -> {
+                    // If the error mentions assignee/accountId or is a 400, retry without assignee
+                    String msg = err.getMessage() != null ? err.getMessage() : "";
+                    if (request.getAssigneeAccountId() != null && !request.getAssigneeAccountId().isBlank()
+                            && (msg.contains("assignee") || msg.contains("accountId") || msg.contains("400"))) {
+                        log.warn("Jira rejected assignee '{}' — retrying without assignee. Error: {}",
+                                request.getAssigneeAccountId(), msg);
+                        return createIssueWithoutAssignee(request, issueTypeName);
+                    }
+                    return Mono.error(err);
+                });
+    }
+
+    /**
+     * Fallback: creates the Jira issue without the assignee field.
+     * Used automatically when the stored jiraAccountId is invalid/stale
+     * (e.g. after switching Jira accounts without updating the Employee table).
+     */
+    private Mono<CreateJiraIssueResponse> createIssueWithoutAssignee(CreateJiraIssueRequest request,
+            String issueTypeName) {
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("project", Map.of("key", jiraProperties.getProjectKey()));
+        fields.put("summary", request.getSummary());
+        fields.put("issuetype", Map.of("name", issueTypeName));
+
+        if (request.getDescription() != null && !request.getDescription().isBlank()) {
+            fields.put("description", buildAdfDescription(request.getDescription()));
+        }
+        if (request.getPriority() != null && !request.getPriority().isBlank()) {
+            fields.put("priority", Map.of("name", request.getPriority()));
+        }
+
+        Map<String, Object> body = Map.of("fields", fields);
+
+        return webClient.post()
+                .uri("/rest/api/3/issue")
+                .bodyValue(body)
+                .retrieve()
+                .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
+                        clientResponse -> clientResponse.bodyToMono(String.class)
+                                .doOnNext(errorBody -> log.error("Jira create (no-assignee) error {}: {}",
+                                        clientResponse.statusCode(), errorBody))
+                                .flatMap(errorBody -> Mono.error(
+                                        new RuntimeException("Jira create (no-assignee) failed [" + clientResponse.statusCode() + "]: " + errorBody))))
+                .bodyToMono(CreateJiraIssueResponse.class)
+                .doOnSuccess(resp -> log.info("Created Jira issue (unassigned fallback): {}",
+                        resp != null ? resp.getKey() : "unknown"))
+                .doOnError(err -> log.error("Jira create (no-assignee) error: {}", err.getMessage()));
     }
 
     /**

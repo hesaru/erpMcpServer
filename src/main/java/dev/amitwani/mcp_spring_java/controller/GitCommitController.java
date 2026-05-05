@@ -15,14 +15,6 @@ import java.util.Map;
 /**
  * REST controller for GitHub commit data.
  *
- * Endpoints:
- * GET /api/github/commits — all commits (optional filters: ?jiraKey=, ?author=)
- * GET /api/github/commits/{sha} — single commit by SHA
- * GET /api/github/commits/by-jira/{jiraKey} — commits linked to a Jira issue
- * GET /api/github/commits/by-author/{username} — commits by GitHub author
- * GET /api/github/commits/linked — commits with a Jira key
- * GET /api/github/commits/unlinked — commits without a Jira key
- * POST /api/github/sync — trigger manual sync
  */
 @RestController
 @RequestMapping("/api/github")

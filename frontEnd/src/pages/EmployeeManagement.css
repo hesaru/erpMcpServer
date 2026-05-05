@@ -1,8 +1,6 @@
-/* ═══════════════════════════════════════════════
-   EMPLOYEE MANAGEMENT — Professional Table UI
-   ═══════════════════════════════════════════════ */
 
-/* ─── Controls Bar ─── */
+
+
 .emp-controls {
     display: flex;
     gap: var(--space-3);
