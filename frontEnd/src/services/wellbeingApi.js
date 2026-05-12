@@ -1,7 +1,6 @@
 import { getAuthHeaders } from './authApi';
 import aiApi from './aiApi';
-
-const API_BASE_URL = 'http://localhost:8090/api';
+import { getMcpClientBase } from '../config/apiConfig';
 
 /**
  * Well-Being API Service
@@ -14,7 +13,7 @@ const wellbeingApi = {
      */
     getDashboardData: async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/wellbeing/dashboard`, {
+            const response = await fetch(`${getMcpClientBase()}/wellbeing/dashboard`, {
                 headers: { ...getAuthHeaders() },
             });
             if (!response.ok) {
@@ -58,7 +57,9 @@ const wellbeingApi = {
             });
         } catch (error) {
             console.error('Error fetching top at-risk employees:', error);
-            return [];
+            // Re-throw so EmployeeWellBeing.jsx's catch sets topError (shows error UI + Retry)
+            // Do NOT return [] here — that would silently show the "all healthy" empty state
+            throw error;
         }
     },
 
@@ -77,7 +78,7 @@ const wellbeingApi = {
             if (!aiResult) return null;
 
             // 2. Fetch raw data for full metric details
-            const rawResponse = await fetch(`${API_BASE_URL}/wellbeing/employee/${employeeId}`, {
+            const rawResponse = await fetch(`${getMcpClientBase()}/wellbeing/employee/${employeeId}`, {
                 headers: { ...getAuthHeaders() },
             });
 
@@ -93,7 +94,9 @@ const wellbeingApi = {
             };
         } catch (error) {
             console.error(`Error analyzing employee ${employeeId}:`, error);
-            return null;
+            // Re-throw so handleSelectEmployee's catch sets selectedError (shows error UI)
+            // Do NOT return null here — that would silently show "Could not find data" instead
+            throw error;
         }
     }
 };

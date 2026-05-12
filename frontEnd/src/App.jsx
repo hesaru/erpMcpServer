@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { ModelProvider } from './context/ModelContext'
@@ -10,8 +11,17 @@ import BacklogManagement from './pages/BacklogManagement'
 import EmployeeWellBeing from './pages/EmployeeWellBeing'
 import LeaveManagement from './pages/LeaveManagement'
 import AdminPanel from './pages/AdminPanel'
+import { loadConfig } from './config/apiConfig'
 
 function App() {
+  const [configReady, setConfigReady] = useState(false)
+
+  useEffect(() => {
+    loadConfig().then(() => setConfigReady(true))
+  }, [])
+
+  if (!configReady) return null   // wait for config before any API calls
+
   return (
     <AuthProvider>
       <ModelProvider>

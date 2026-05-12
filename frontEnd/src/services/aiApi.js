@@ -1,4 +1,4 @@
-const AI_API_BASE_URL = 'http://localhost:8080';
+import { getMcpServerBase } from '../config/apiConfig';
 
 /**
  * AI API Service
@@ -16,7 +16,7 @@ const aiApi = {
     getSuitableAssignees: async (message, model = 'openai') => {
         try {
             const response = await fetch(
-                `${AI_API_BASE_URL}/suitableAsigneesList?message=${encodeURIComponent(message)}&model=${encodeURIComponent(model)}`
+                `${getMcpServerBase()}/suitableAsigneesList?message=${encodeURIComponent(message)}&model=${encodeURIComponent(model)}`
             );
 
             if (!response.ok) {
@@ -41,7 +41,7 @@ const aiApi = {
     analyzeTopAtRisk: async (model = 'openai') => {
         try {
             const response = await fetch(
-                `${AI_API_BASE_URL}/analyzeTopStress?model=${encodeURIComponent(model)}`
+                `${getMcpServerBase()}/analyzeTopStress?model=${encodeURIComponent(model)}`
             );
 
             if (!response.ok) {
@@ -67,7 +67,7 @@ const aiApi = {
     analyzeEmployeeStress: async (employeeId, model = 'openai') => {
         try {
             const response = await fetch(
-                `${AI_API_BASE_URL}/analyzeEmployeeStress?employeeId=${employeeId}&model=${encodeURIComponent(model)}`
+                `${getMcpServerBase()}/analyzeEmployeeStress?employeeId=${employeeId}&model=${encodeURIComponent(model)}`
             );
 
             if (!response.ok) {

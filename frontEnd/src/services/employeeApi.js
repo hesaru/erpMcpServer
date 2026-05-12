@@ -1,6 +1,5 @@
 import { getAuthHeaders } from './authApi';
-
-const API_BASE_URL = 'http://localhost:8090/api';
+import { getMcpClientBase } from '../config/apiConfig';
 
 /**
  * Employee API Service
@@ -13,7 +12,7 @@ const employeeApi = {
      */
     getAllEmployees: async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/employees`, {
+            const response = await fetch(`${getMcpClientBase()}/employees`, {
                 headers: { ...getAuthHeaders() },
             });
             if (!response.ok) {
@@ -33,7 +32,7 @@ const employeeApi = {
      */
     createEmployee: async (employeeData) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/employees`, {
+            const response = await fetch(`${getMcpClientBase()}/employees`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -60,7 +59,7 @@ const employeeApi = {
      */
     deleteEmployee: async (id) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/employees/${id}`, {
+            const response = await fetch(`${getMcpClientBase()}/employees/${id}`, {
                 method: 'DELETE',
                 headers: { ...getAuthHeaders() },
             });
@@ -82,7 +81,7 @@ const employeeApi = {
      */
     searchEmployees: async (query) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/employees/search?query=${encodeURIComponent(query)}`, {
+            const response = await fetch(`${getMcpClientBase()}/employees/search?query=${encodeURIComponent(query)}`, {
                 headers: { ...getAuthHeaders() },
             });
             if (!response.ok) {

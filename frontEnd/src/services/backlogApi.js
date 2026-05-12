@@ -1,6 +1,6 @@
 import { getAuthHeaders } from './authApi';
+import { getMcpClientBase } from '../config/apiConfig';
 
-const API_BASE_URL = 'http://localhost:8090/api';
 
 /**
  * Backlog Task API Service
@@ -14,7 +14,7 @@ const backlogApi = {
      */
     createTask: async (taskData) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/backlog-tasks`, {
+            const response = await fetch(`${getMcpClientBase()}/backlog-tasks`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ const backlogApi = {
             if (filters.source) queryParams.append('source', filters.source);
 
             const queryString = queryParams.toString();
-            const url = queryString ? `${API_BASE_URL}/backlog-tasks?${queryString}` : `${API_BASE_URL}/backlog-tasks`;
+            const url = queryString ? `${getMcpClientBase()}/backlog-tasks?${queryString}` : `${getMcpClientBase()}/backlog-tasks`;
 
             const response = await fetch(url, {
                 headers: { ...getAuthHeaders() },
@@ -73,7 +73,7 @@ const backlogApi = {
      */
     getTasksByStatus: async (status) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/backlog-tasks?status=${status}`, {
+            const response = await fetch(`${getMcpClientBase()}/backlog-tasks?status=${status}`, {
                 headers: { ...getAuthHeaders() },
             });
 
@@ -95,7 +95,7 @@ const backlogApi = {
      */
     getTasksByAssignee: async (assigneeId) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/backlog-tasks?assigneeId=${assigneeId}`, {
+            const response = await fetch(`${getMcpClientBase()}/backlog-tasks?assigneeId=${assigneeId}`, {
                 headers: { ...getAuthHeaders() },
             });
 
@@ -117,7 +117,7 @@ const backlogApi = {
      */
     getTaskById: async (id) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/backlog-tasks/${id}`, {
+            const response = await fetch(`${getMcpClientBase()}/backlog-tasks/${id}`, {
                 headers: { ...getAuthHeaders() },
             });
 
@@ -140,7 +140,7 @@ const backlogApi = {
      */
     updateTask: async (id, taskData) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/backlog-tasks/${id}`, {
+            const response = await fetch(`${getMcpClientBase()}/backlog-tasks/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -167,7 +167,7 @@ const backlogApi = {
      */
     deleteTask: async (id) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/backlog-tasks/${id}`, {
+            const response = await fetch(`${getMcpClientBase()}/backlog-tasks/${id}`, {
                 method: 'DELETE',
                 headers: { ...getAuthHeaders() },
             });

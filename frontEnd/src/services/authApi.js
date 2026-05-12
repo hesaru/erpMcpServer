@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-const API_BASE_URL = 'http://localhost:8090/api';
+import { getMcpClientBase } from '../config/apiConfig';
 
 /**
  * Get the stored JWT token
@@ -18,13 +17,14 @@ export const getAuthHeaders = () => {
 /**
  * Create an axios instance with auth headers
  */
-export const authAxios = axios.create({
-    baseURL: API_BASE_URL,
-});
+// Create instance without baseURL - it's set dynamically per-request
+// so that getMcpClientBase() is only called after loadConfig() resolves.
+export const authAxios = axios.create({});
 
-// Add token to every request automatically
+// Add token + dynamic baseURL to every request
 authAxios.interceptors.request.use(
     (config) => {
+        config.baseURL = getMcpClientBase();   // set after loadConfig() resolves
         const token = getToken();
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
@@ -52,7 +52,7 @@ const authApi = {
      * Login with username and password
      */
     login: async (username, password) => {
-        const response = await axios.post(`${API_BASE_URL}/auth/login`, {
+        const response = await axios.post(`${getMcpClientBase()}/auth/login`, {
             username,
             password,
         });

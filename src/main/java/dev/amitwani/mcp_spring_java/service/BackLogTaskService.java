@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Service
 @Slf4j
@@ -30,10 +32,17 @@ public class BackLogTaskService {
     public BackLogTask createTask(BackLogTask task) {
         log.info("Creating new backlog task: {}", task.getTitle());
         BackLogTask saved = backLogTaskRepository.save(task);
-        // If the task has an assignee, push it to Jira immediately
+        // If the task has an assignee, push to Jira on a boundedElastic thread.
+        // Mono.fromCallable ensures the ENTIRE pushIssueToJira() — including .block() —
+        // runs off the reactor-http-epoll thread, which does not allow blocking.
         if (saved.getAssignee() != null) {
-            log.info("Task has assignee — pushing to Jira immediately");
-            jiraSyncService.pushIssueToJira(saved);
+            log.info("Task has assignee — pushing to Jira on boundedElastic thread");
+            Mono.fromCallable(() -> jiraSyncService.pushIssueToJira(saved))
+                    .subscribeOn(Schedulers.boundedElastic())
+                    .subscribe(
+                            key -> log.info("Jira push complete, key: {}", key),
+                            err -> log.error("Jira push failed: {}", err.getMessage(), err)
+                    );
         }
         return saved;
     }
