@@ -13,7 +13,7 @@ export const useModel = () => {
 
 export const ModelProvider = ({ children }) => {
     const { user } = useAuth();
-    const [selectedModel, setSelectedModel] = useState('openai');
+    const [selectedModel, setSelectedModel] = useState('gemini');
 
     // Load saved model preference when user is available
     useEffect(() => {
@@ -22,8 +22,8 @@ export const ModelProvider = ({ children }) => {
             if (savedModel && (savedModel === 'openai' || savedModel === 'gemini')) {
                 setSelectedModel(savedModel);
             } else {
-                // Default to openai for new login
-                setSelectedModel('openai');
+                // Default to gemini for new login
+                setSelectedModel('gemini');
             }
         }
     }, [user]);
@@ -31,7 +31,7 @@ export const ModelProvider = ({ children }) => {
     // Reset model to default on logout
     useEffect(() => {
         if (!user) {
-            setSelectedModel('openai');
+            setSelectedModel('gemini');
             localStorage.removeItem('selectedModel');
         }
     }, [user]);
